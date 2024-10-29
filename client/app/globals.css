@@ -76,3 +76,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+#home-page button:focus {
+  outline: 4px solid white; /* Thick white outline */
+  outline-offset: 2px; /* Optional: space between the outline and the element */
+}
