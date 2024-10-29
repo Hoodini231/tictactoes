@@ -1,5 +1,5 @@
 "use client";
-import { Splash, Game, Home } from "./components";
+import { Splash, Game, Home, Board } from "./components";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -16,6 +16,7 @@ export default function App() {
           <Route path="/" element={<Splash />} />
           <Route path="/game" element={<Game />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/board" element={<Board />} />
         </Routes>
       </Router>
     </div>
