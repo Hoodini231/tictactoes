@@ -7,10 +7,13 @@ import { ServerClient } from "postmark";
 import mongoose from "mongoose";
 import User from "./models/user.js";
 import dotenv from "dotenv";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 
 const databaseString = process.env.REACT_APP_DATABASE_URL;
+
 
 mongoose.connect(databaseString)
     .then(() => {
@@ -24,6 +27,20 @@ mongoose.connect(databaseString)
     });
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000", // Frontend origin
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true
+    }
+});
+const PORT = 3001;
+server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
 //const serverClient = new postmark.ServerClient("POSTMARK_SERVER_API_TOKEN");
 app.use(cors());
 app.use(express.json());
@@ -39,6 +56,44 @@ app.use(bodyParser.json({
     parameterLimit: 10000
 }))
 
+const waitingQueue = [];
+
+io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
+    socket.emit("connected", { message: "You are connected!" });
+
+    socket.on("joinQueue", ({ roomID, username }) => {
+        waitingQueue.push({ socket, roomID, username });
+
+        if (waitingQueue.length >= 2) {
+            const player1 = waitingQueue.shift();
+            const player2 = waitingQueue.shift();
+
+            // Assign both players to the same room
+            player1.socket.join(roomID);
+            player2.socket.join(roomID);
+
+            
+            // Pass opponent data back to the component
+            io.to(player1.socket.id).emit("opponentFound", player2.username);
+            io.to(player2.socket.id).emit("opponentFound", player1.username);
+            
+            // Notify players they've been paired
+            io.to(roomID).emit("startGame", { roomID });
+            console.log(`Game started in room ${roomID}`);
+
+            // Notify players they've been paired
+            io.to(roomID).emit("startGame", { roomID });
+            console.log(`Game started in room ${roomID}`);
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected:", socket.id);
+    });
+});
+
+
 // ==================================
 // Functions for user authentication
 // ==================================
@@ -47,10 +102,10 @@ app.use(bodyParser.json({
 app.post("/signup", async (req, res) => {
     try {
         console.log("arrived at signup");
-        const { username, email, pswd } = req.body;
+        const { username, email, password } = req.body;
         console.log(req.body);
         const userId = uuidv4(); // Great random user id gererator
-        const hashPswd = await bcrypt.hash(pswd, 10);
+        const hashPswd = await bcrypt.hash(password, 10);
         //const token = serverClient.createToken(userId);
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
@@ -69,7 +124,6 @@ app.post("/signup", async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-    
 });
 
 app.post("test", async (req, res) => {

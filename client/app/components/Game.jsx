@@ -1,9 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
+import { io } from 'socket.io-client';
+import { v4 as uuidv4 } from "uuid";
 import Board from './Board';
 
 const Game = () => {
     const cookies = new Cookies();
+    const [roomID, setRoomID] = useState(uuidv4()); // Generate unique room ID
+    const [socket, setSocket] = useState(null);
+    const [gameState, setGameState] = useState(null);
+    const [opponentData, setOpponentData] = useState("Waiting...");
+
+    // useEffect(() => {
+    //     const newSocket = io("http://localhost:3001");
+    //     setSocket(newSocket);
+    //     newSocket.on('connected', (message) => {
+    //         console.log('Connected message from server:', message);
+    //     })
+
+    //     return () => {
+    //         newSocket.disconnect();
+    //     };
+    // })
+
+    useEffect(() => {
+        // Connect to WebSocket server
+        const newSocket = io("http://localhost:3001");
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        newSocket.on("connected", (message) => {
+            console.log("Connected message from server:", message);
+        });
+
+        // Join a room on server
+        newSocket.emit("joinQueue", { roomID: roomID, username: cookies.get("username") });
+
+        newSocket.on('dataFromServer', ({ data }) => {
+            console.log('Data received from server:', data);
+            // Handle the received data here
+        });
+
+        newSocket.on("opponentFound", (data) => {
+            console.log("Opponent found!");
+            console.log(data);
+            setOpponentData(data);
+        });
+
+        newSocket.on('startGame', (data) => {
+            console.log('Move received:', data);
+            //setGameState(data); // Update game state with received data
+        });
+
+        newSocket.on('move', (data) => {
+            console.log('Move received:', data);
+            setGameState(data); // Update game state with received data
+        });
+
+        // Clean up on component unmount
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [roomID]);
+
     return (
         <div className="game-container relative flex flex-col items-center gap-4 p-6 w-screen">
             <button 
@@ -14,16 +76,14 @@ const Game = () => {
             </button>
             
             <div className="players-info flex gap-4">
-                {/* Individual card for You */}
                 <div className="player-card bg-gray-800 text-white p-6 rounded-lg shadow-md w-full max-w-xs text-center">
                     <strong className="block text-lg mb-2">You:</strong>
                     <span className="text-xl font-semibold">{cookies.get("username")}</span>
                 </div>
                 
-                {/* Individual card for Opponent */}
                 <div className="player-card bg-gray-800 text-white p-6 rounded-lg shadow-md w-full max-w-xs text-center">
                     <strong className="block text-lg mb-2">Opponent:</strong>
-                    <span className="text-xl font-semibold">Player 2</span>
+                    <span className="text-xl font-semibold">{opponentData}</span>
                 </div>
             </div>
             
@@ -31,7 +91,7 @@ const Game = () => {
                 <strong>You are playing as:</strong> X
             </div>
             
-            <Board />
+            <Board socket={socket} roomID={roomID} />
             
             <div className="turn-info text-white text-lg font-bold mt-4">
                 <strong>X's turn</strong>
