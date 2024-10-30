@@ -15,31 +15,26 @@ dotenv.config();
 const databaseString = process.env.REACT_APP_DATABASE_URL;
 
 
-mongoose.connect(databaseString)
-    .then(() => {
-        console.log("Connected to MongoDB");
-        app.listen(5001, () => {
-            console.log('Server is running on port 5001');
-        });
-    })
-    .catch((error) => {
-        console.error("Failed to connect to MongoDB", error);
-    });
-
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000", // Frontend origin
         methods: ["GET", "POST"],
-        allowedHeaders: ["my-custom-header"],
         credentials: true
     }
 });
-const PORT = 3001;
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+mongoose.connect(databaseString)
+    .then(() => {
+        console.log("Connected to MongoDB");
+        server.listen(5001, () => {
+            console.log('Server is running on port 5001');
+        });
+    })
+    .catch((error) => {
+        console.error("Failed to connect to MongoDB", error);
+    });
 
 //const serverClient = new postmark.ServerClient("POSTMARK_SERVER_API_TOKEN");
 app.use(cors());
@@ -62,36 +57,84 @@ io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
     socket.emit("connected", { message: "You are connected!" });
 
-    socket.on("joinQueue", ({ roomID, username }) => {
-        waitingQueue.push({ socket, roomID, username });
-
+    socket.on("joinQueue", ({ username }) => {
+        waitingQueue.push({ socket, username });
+        console.log("User joined queue:", username);
+        console.log("Queue length:", waitingQueue.length);
         if (waitingQueue.length >= 2) {
             const player1 = waitingQueue.shift();
             const player2 = waitingQueue.shift();
-
+            const roomID = uuidv4().substring(0, 10);
             // Assign both players to the same room
             player1.socket.join(roomID);
             player2.socket.join(roomID);
+            let p1_symbol = 'X';
+            let p2_symbol = 'O';
+            if (Math.random() < 0.5) {
+                p1_symbol = 'O';
+                p2_symbol = 'X';
+            }
+            const gameState = {
+                playerX: p1_symbol === 'X' 
+                    ? player1.username 
+                    : player2.username, 
+                playerO: p1_symbol === 'O' 
+                    ? player1.username 
+                    : player2.username, 
+                roomID: roomID,
+                player1Socket: player1.socket.id,
+                player2Socket: player2.socket.id,
+                lastMove: null,
+                board: Array(9).fill(null)
+            };
+            const player1Data = {symbol: p1_symbol, myTurn: p1_symbol === 'X', gameState, opponent: player2.username};
+            const player2Data = {symbol: p2_symbol, myTurn: p2_symbol === 'X', gameState, opponent: player1.username};
 
-            
             // Pass opponent data back to the component
-            io.to(player1.socket.id).emit("opponentFound", player2.username);
-            io.to(player2.socket.id).emit("opponentFound", player1.username);
-            
+            io.to(player1.socket.id).emit("startGame", player1Data);
+            io.to(player2.socket.id).emit("startGame", player2Data);
+            io.to(roomID).emit("roomIdGenerated", roomID);
+            console.log("starting game!!! ", gameState);
             // Notify players they've been paired
-            io.to(roomID).emit("startGame", { roomID });
-            console.log(`Game started in room ${roomID}`);
-
-            // Notify players they've been paired
-            io.to(roomID).emit("startGame", { roomID });
-            console.log(`Game started in room ${roomID}`);
+            // io.to(roomID).emit("startGame", { roomID });
         }
     });
 
+    socket.on("playerMoved", ({ roomID, gameState }) => {
+        console.log("Player moved:", gameState);
+        console.log("player emmitting to lobby: ", roomID);
+
+        try {
+            io.to(roomID.toString()).emit("playerMoved", { gameState });
+            // io.to(socket.id).emit("playerXMoved", { gameState });
+            // io.to(gameState.player2Socket).emit("playerXMoved", { gameState });
+            // io.to(gameState.player1Socket).emit("playerXMoved", { gameState });
+        } catch (error) {
+            console.log("Error in playerXMoved:", error);
+        }
+        
+        console.log("emitted completed");
+    });
+
+    // socket.on("playerOMoved", ({ roomID, gameState }) => {
+    //     console.log("Player O moved:", gameState);
+    //     try {
+    //         io.to("monkey").emit("playerOMoved", { gameState });
+    //         // io.to(socket.id).emit("playerOMoved", { gameState });
+    //         // io.to(gameState.player2Socket).emit("playerOMoved", { gameState });
+    //         // io.to(gameState.player1Socket).emit("playerOMoved", { gameState });
+    //         // io.to(roomID).emit("test", { gameState });
+    //     } catch (error) {
+    //         console.log("Error in playerOMoved:", error);
+    //     }
+    //     console.log("emitted completed");
+    // });
     socket.on("disconnect", () => {
         console.log("A user disconnected:", socket.id);
     });
 });
+
+
 
 
 // ==================================
