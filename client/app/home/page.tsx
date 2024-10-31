@@ -1,51 +1,114 @@
 "use client";
-
-import React, { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import React from 'react';
 import { useRouter } from 'next/navigation';
+import { Settings, Users, User, Trophy, Info } from "lucide-react";
 
-export default function Home() {
-    const router = useRouter();
-    const [username, setUsername] = useState("...");
+const HomePage = () => {
+  const router = useRouter();
+  const [username, setUsername] = React.useState("");
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUsername = sessionStorage.getItem("username");
+      if (storedUsername) {
+        setUsername(storedUsername);
+      }
+    }
+  }, []);
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const storedUsername = sessionStorage.getItem("username");
-            if (storedUsername) {
-                setUsername(storedUsername);
-            }
-        }
-    }, []);
+  const navigate = (path: string) => {
+    router.push(path);
+  };
 
-    const navigate = (path: string) => {
-        router.push(path);
-    };
-
-    return (
-        <div id="home-page" className="min-h-screen flex flex-col justify-start items-center bg-gradient-to-b from-blue-500 to-purple-600 p-4">
-            <header className="w-full max-w-4xl mx-auto p-4 flex justify-between items-center bg-white bg-opacity-10 rounded-lg backdrop-blur-md mb-8">
-                <h1 className="text-4xl font-bold text-white">Welcome {username}!</h1>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white hover:bg-opacity-20">
-                    <Settings className="h-8 w-8" />
-                    <span className="sr-only">Settings</span>
-                </Button>
-            </header>
-            <div className="w-full max-w-xs space-y-4">
-                <Button onClick={() => navigate("/game")} className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md">
-                    Find Random Game
-                </Button>
-                <Button onClick={() => navigate("/host")} className="w-full py-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md">
-                    Join Game
-                </Button>
-                <Button onClick={() => navigate("/join")} className="w-full py-6 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg shadow-md">
-                    Host Game
-                </Button>
-                <Button onClick={() => navigate("/stats")} className="w-full py-6 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md">
-                    Past Games
-                </Button>
-            </div>
+  return (
+    <div className="min-h-screen bg-[#1a1a1a] text-white p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 p-4 bg-gray-400 bg-opacity-50 rounded-lg">
+          <h1 className="text-4xl font-bold text-center">
+            Welcome {username}!
+          </h1>
         </div>
-    );
-}
+
+        {/* Menu Items */}
+        <div className="space-y-4">
+          <button 
+            onClick={() => navigate("/game")}
+            className="w-full group hover:translate-x-3 hover:outline hover:outline-white hover:outline-4 hover:outline-offset-2 transition-transform focus:outline-white focus:outline-4 focus:outline-offset-2">
+            <div className="flex items-center bg-gradient-to-r from-purple-900 to-pink-600 p-4 rounded-lg">
+              <div className="w-24 h-24 flex items-center justify-center">
+                <Users className="w-16 h-16" />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-2xl font-bold text-left ml-0">PLAY</h2>
+                <p className="text-gray-300">PLAY ONLINE WITH FRIENDS AND FOES</p>
+              </div>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate("/host")}
+            className="w-full group hover:translate-x-3 hover:outline hover:outline-white hover:outline-4 hover:outline-offset-2 transition-transform focus:outline-white focus:outline-4 focus:outline-offset-2"
+          >
+            <div className="flex items-center bg-gradient-to-r from-indigo-800 to-blue-500 p-4 rounded-lg">
+              <div className="w-24 h-24 flex items-center justify-center">
+                <User className="w-16 h-16" />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-2xl font-bold text-left ml-0">HOST</h2>
+                <p className="text-gray-300">CHALLENGE SOMEONE AND FIGHT</p>
+              </div>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate("/join")}
+            className="w-full group hover:translate-x-3 hover:outline hover:outline-white hover:outline-4 hover:outline-offset-2 transition-transform focus:outline-white focus:outline-4 focus:outline-offset-2"
+          >
+            <div className="flex items-center bg-gradient-to-r from-red-800 to-orange-400 p-4 rounded-lg">
+              <div className="w-24 h-24 flex items-center justify-center">
+                <Settings className="w-16 h-16" />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-2xl font-bold text-left ml-0">JOIN</h2>
+                <p className="text-gray-300">JOIN SOMEONES LOBBY NOW</p>
+              </div>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate("/stats")}
+            className="w-full group hover:translate-x-3 hover:outline hover:outline-white hover:outline-4 hover:outline-offset-2 transition-transform focus:outline-white focus:outline-4 focus:outline-offset-2"
+          >
+            <div className="flex items-center bg-gradient-to-r from-green-800 to-emerald-800 p-4 rounded-lg">
+              <div className="w-24 h-24 flex items-center justify-center">
+                <Trophy className="w-16 h-16" />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-2xl font-bold text-left ml-0">STATS</h2>
+                <p className="text-gray-300">LEADERBOARDS, ACHIEVEMENTS, AND MORE</p>
+              </div>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate("/settings")}
+            className="w-full group hover:translate-x-3 hover:outline hover:outline-white hover:outline-4 hover:outline-offset-2 transition-transform focus:outline-white focus:outline-4 focus:outline-offset-2"
+          >
+            <div className="flex items-center bg-gradient-to-r from-gray-600 to-gray-700 p-4 rounded-lg">
+              <div className="w-24 h-24 flex items-center justify-center">
+                <Info className="w-16 h-16" />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-2xl font-bold text-left ml-0">SETTINGS</h2>
+                <p className="text-gray-300">ALL ABOUT THE GAME</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HomePage;
