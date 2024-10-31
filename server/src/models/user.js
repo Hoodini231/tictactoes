@@ -18,6 +18,24 @@ const userSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true
+    },
+    stats: {
+        wins: {
+            type: Number,
+            default: 0
+        },
+        losses: {
+            type: Number,
+            default: 0
+        },
+        ties: {
+            type: Number,
+            default: 0
+        },
+        gamesPlayed: {
+            type: Number,
+            default: 0
+        },
     }
 });
 

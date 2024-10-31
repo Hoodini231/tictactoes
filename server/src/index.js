@@ -6,9 +6,11 @@ import bodyParser from "body-parser";
 import { ServerClient } from "postmark";
 import mongoose from "mongoose";
 import User from "./models/user.js";
+import Game from "./models/games.js";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
+
 
 dotenv.config();
 
@@ -55,6 +57,7 @@ const waitingQueue = [];
 
 io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
+
     socket.emit("connected", { message: "You are connected!" });
 
     socket.on("joinQueue", ({ username }) => {
@@ -68,6 +71,10 @@ io.on("connection", (socket) => {
             // Assign both players to the same room
             player1.socket.join(roomID);
             player2.socket.join(roomID);
+            player1.socket.roomID = roomID;
+            player2.socket.roomID = roomID;
+            player1.socket.username = player1.username;
+            player2.socket.roomID = player2.username;
             let p1_symbol = 'X';
             let p2_symbol = 'O';
             if (Math.random() < 0.5) {
@@ -82,10 +89,11 @@ io.on("connection", (socket) => {
                     ? player1.username 
                     : player2.username, 
                 roomID: roomID,
-                player1Socket: player1.socket.id,
-                player2Socket: player2.socket.id,
-                lastMove: null,
-                board: Array(9).fill(null)
+                lastTurn: null,
+                board: Array(9).fill(null),
+                winner: null,
+                status: 'progress',
+                turnNumber: 0
             };
             const player1Data = {symbol: p1_symbol, myTurn: p1_symbol === 'X', gameState, opponent: player2.username};
             const player2Data = {symbol: p2_symbol, myTurn: p2_symbol === 'X', gameState, opponent: player1.username};
@@ -95,45 +103,53 @@ io.on("connection", (socket) => {
             io.to(player2.socket.id).emit("startGame", player2Data);
             io.to(roomID).emit("roomIdGenerated", roomID);
             console.log("starting game!!! ", gameState);
-            // Notify players they've been paired
-            // io.to(roomID).emit("startGame", { roomID });
         }
     });
 
     socket.on("playerMoved", ({ roomID, gameState }) => {
-        console.log("Player moved:", gameState);
-        console.log("player emmitting to lobby: ", roomID);
-
         try {
             io.to(roomID.toString()).emit("playerMoved", { gameState });
-            // io.to(socket.id).emit("playerXMoved", { gameState });
-            // io.to(gameState.player2Socket).emit("playerXMoved", { gameState });
-            // io.to(gameState.player1Socket).emit("playerXMoved", { gameState });
+            uploadGameState(gameState);
         } catch (error) {
             console.log("Error in playerXMoved:", error);
         }
-        
-        console.log("emitted completed");
     });
 
-    // socket.on("playerOMoved", ({ roomID, gameState }) => {
-    //     console.log("Player O moved:", gameState);
-    //     try {
-    //         io.to("monkey").emit("playerOMoved", { gameState });
-    //         // io.to(socket.id).emit("playerOMoved", { gameState });
-    //         // io.to(gameState.player2Socket).emit("playerOMoved", { gameState });
-    //         // io.to(gameState.player1Socket).emit("playerOMoved", { gameState });
-    //         // io.to(roomID).emit("test", { gameState });
-    //     } catch (error) {
-    //         console.log("Error in playerOMoved:", error);
-    //     }
-    //     console.log("emitted completed");
-    // });
+    socket.on("playerWon", ({ roomID, gameState }) => {
+        try {
+            io.to(roomID.toString()).emit("playerWon", { gameState });
+            uploadGameState(gameState);
+        } catch (error) {
+            console.log("Error in playerWon:", error);
+        }
+    });
+
     socket.on("disconnect", () => {
         console.log("A user disconnected:", socket.id);
+        //socket.emit("disconnect", { message: "user has disconnected"});
     });
 });
 
+async function uploadGameState(gameState) {
+    try {
+        const finalGameState = new Game({
+            winner: gameState.winner !== null ? gameState.winner : "none", // Ensure winner is set
+            gameID: gameState.roomID, // Corrected from gameID to gameId
+            playerX: gameState.playerX,
+            playerO: gameState.playerO,
+            lastUpdate: new Date(),
+            board: gameState.board,
+            lastTurn: gameState.lastTurn || "none", // Ensure lastTurn is set
+            status: gameState.status || "incomplete",
+            turnNumber: gameState.turnNumber || 0
+        });
+        await finalGameState.save();
+        console.log("saved");
+        console.log(finalGameState);
+    } catch (error) {
+        console.log('Err uploading', error);
+    }
+}
 
 
 

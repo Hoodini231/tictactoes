@@ -39,18 +39,6 @@ const Board = ({ socket, roomID, gameStateInput }) => {
         setBoard(data?.gameState?.board || Array(9).fill(null));
         setIsXNext(true);
       });
- 
-      socket.on('startGame2', (data) => {
-        console.log('Starting game in board:', data);
-      });
-
-      socket.on("playerOMove", (data) => {
-        console.log('Move from O received data.gameState:', data.gameState);
-        console.log('Move from O received array:', data.gameState.board);
-        setGameState(data.gameState);
-        setBoard(data.gameState.board);
-        setIsXNext(true);
-      });
 
       socket.on('playerMoved', (data) => {
         console.log('Move received:', data.gameState);
@@ -58,7 +46,7 @@ const Board = ({ socket, roomID, gameStateInput }) => {
         setBoard(data.gameState.board);
         console.log("last move: ", data.gameState.lastMove);
         console.log("last move = x? : ", data.gameState.lastMove === 'X');
-        if (data.gameState.lastMove === 'X') {
+        if (data.gameState.lastTurn === 'X') {
           setPlayerTurn('O');
           setIsXNext(false);
           console.log("setting isXNext to false");
@@ -126,42 +114,43 @@ const Board = ({ socket, roomID, gameStateInput }) => {
 }, [isXNext]);
 
   const handleClick = (index) => {
-    console.log("x turn but O player clicked: " + {isXNext} && username !== gameState.playerX);
-    console.log("is not x turn but X player clicked: " + ({isXNext} && username !== gameState.playerX));
-    
-    if (board[index] || winner || (playerTurn === 'X' && username !== gameState.playerX) || (playerTurn === 'O' && username !== gameState.playerO)
-        ) return; // Ignore click if square is filled or game has a winner
+    if (
+        board[index] || 
+        winner || 
+        (playerTurn === 'X' && username !== gameState.playerX) || 
+        (playerTurn === 'O' && username !== gameState.playerO)
+    ) return; // Ignore click if square is filled or game has a winner
 
-    // Update the board
+    // Update the board with the new move
     const newBoard = board.slice();
-    // console.log("player X gameState: " + gameState.playerX);
-    // console.log("username: " + username);
     newBoard[index] = username === gameState.playerX ? 'X' : 'O';
-    console.log("new board: ", newBoard);
     setBoard(newBoard);
-    //setIsXNext(!isXNext);
-    gameStateCopy = { 
-      playerX: gameState.playerX, 
-      playerO: gameState.playerO,
-      board: newBoard, 
-      roomID: gameState.roomID,
-      lastMove: isXNext ? 'X' : 'O' };
 
+    // Check if this move results in a winner
+    const winnerInfo = calculateWinner(newBoard);
+    const isCompleted = winnerInfo ? "complete" : "incomplete";
+
+    // Create updated game state with winner and game status
+    console.log( winnerInfo?.winner);
+    const newGameState = {
+        playerX: gameState.playerX,
+        playerO: gameState.playerO,
+        board: newBoard,
+        roomID: gameState.roomID,
+        lastTurn: isXNext ? 'X' : 'O',
+        winner: winnerInfo ? winnerInfo?.winner : "none",
+        status: winnerInfo?.winner ?"complete" : "incomplete",
+        turnNumber: gameState.turnNumber + 1
+    };
+
+    // Update game state locally
+    setGameState(newGameState);
+    setWinner(winnerInfo ? winnerInfo.winner : null);
+
+    // Emit the updated game state to the server
     if (socket) {
-      const signal = "playerMoved";
-      console.log("emit move: ", signal);
-      socket.emit("playerMoved", { roomID: gameStateCopy.roomID, gameState: gameStateCopy });
+        socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
     }
-    
-    // Update game state and emit the move
-    setGameState({ 
-      playerX: gameState.playerX, 
-      playerO: gameState.playerO, 
-      board: newBoard, 
-      roomID: gameState.roomID,
-      lastMove: isXNext ? 'X' : 'O' });
-    console.log("gamestate: ", gameState);
-    //emitMove();
   };
 
   const renderSquare = (index) => (

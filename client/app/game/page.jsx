@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 import { io, Socket } from 'socket.io-client';
 import { v4 as uuidv4 } from "uuid";
 import Board from '../board/page';
@@ -53,37 +52,11 @@ const Game = () => {
             //setGameState(data); // Update game state with received data
         });
 
-        //newSocket.emit("move", { roomID: roomID, gameState: gameState, symbol: mySymbol, myTurn: myTurn });
-
-        // newSocket.on('playerOMoved', (data) => {
-        //     console.log('Move from O received:', data.gameState);
-        //     console.log('my symbol: ' + mySymbol);
-        //     if (mySymbol === 'O') {
-        //         setMyTurn(true);
-        //     } else {
-        //         setMyTurn(false);
-        //     }
-        //     setGameState(data.gameState);
-            
-            
-        // });
-
-        // newSocket.on('playerXMoved', (data) => {
-        //     console.log('Move from X received:', data.gameState);
-        //     console.log('my symbol: ' + mySymbol);
-        //     if (mySymbol === 'X') {
-        //         setMyTurn(false);
-        //     } else {
-        //         setMyTurn(true);
-        //     }
-        //     setGameState(data.gameState);
-            
-        // });
-
         newSocket.on('gameOver', (data) => {
             console.log('Game over:', data);
             setGameState(data); // Update game state with received data
         });
+    
 
         // Clean up on component unmount
         return () => {
@@ -112,8 +85,8 @@ const Game = () => {
                 </div>
             </div>
             
-            <div className="playing-as text-white text-lg font-semibold mt-4">
-                <strong>You are playing as:</strong>{mySymbol}
+            <div className="playing-as text-white text-4xl font-semibold mt-4">
+                <strong>You are playing as: </strong>{mySymbol}
             </div>
             <div>
                 {opponentData === "Waiting..." ? (
