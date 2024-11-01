@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 // Single square component
 const Square = ({ value, onClick }) => (
