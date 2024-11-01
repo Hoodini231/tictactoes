@@ -55,6 +55,7 @@ app.use(bodyParser.json({
 
 let waitingQueue = [];
 let rooms = new Map();
+let tempGameStates = new Map();
 
 io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -96,12 +97,14 @@ io.on("connection", (socket) => {
                 status: 'progress',
                 turnNumber: 0
             };
-            const player1Data = {symbol: p1_symbol, myTurn: p1_symbol === 'X', gameState, opponent: player2.username};
-            const player2Data = {symbol: p2_symbol, myTurn: p2_symbol === 'X', gameState, opponent: player1.username};
+            const player1Data = {symbol: p1_symbol, myTurn: p1_symbol === 'X', gameState: gameState, opponent: player2.username};
+            const player2Data = {symbol: p2_symbol, myTurn: p2_symbol === 'X', gameState: gameState, opponent: player1.username};
 
             // Pass opponent data back to the component
             io.to(player1.socket.id).emit("startGame", player1Data);
             io.to(player2.socket.id).emit("startGame", player2Data);
+            tempGameStates.set(roomID, gameState);
+            console.log(tempGameStates);
             io.to(roomID).emit("roomIdGenerated", roomID);
             console.log("starting game!!! ", gameState);
         }
@@ -130,11 +133,9 @@ io.on("connection", (socket) => {
         socket.roomID = roomID;
         socket.username = username;
         socket.join(roomID);
-        console.log("host roomID: ", roomID);
-        console.log("rooms.get: ", io.sockets.adapter.rooms.get(roomID));
         rooms.set(roomID, { host: username, hostSocket: socket.id });
-        console.log("Hosted room:", roomID);
         //io.to(socket.id).emit("roomIdGenerated", roomID);
+        console.log("emitting back to host ", roomID);
         io.to(roomID).emit("roomIdGenerated", roomID);
     });
 
@@ -181,13 +182,21 @@ io.on("connection", (socket) => {
                 gameState: gameState,
                 opponent: hostUsername
             };
-
+            tempGameStates.set(roomID, gameState);
             io.to(hostSocket).emit("startGame", player1Data);
             io.to(socket.id).emit("startGame", player2Data);
         } else {
             io.to(socket.id).emit("roomFull", { message: "Room is full" });
         }
     });
+
+    socket.on("boardSocketJoin", (roomID) => {
+        console.log("board socket joined");
+        socket.join(roomID);
+        const gameState = tempGameStates.get(roomID);
+        console.log(gameState);
+        io.to(socket.id).emit("boardSocketJoinedSuccessful", {gameState: gameState});
+    })
 
     socket.on("disconnect", () => {
         console.log("dced ", socket.id);

@@ -15,7 +15,7 @@ const HostGame = () => {
     const [joinedGame, setJoinedGame] = useState("false");
     const [mySymbol, setMySymbol] = useState("?");
     // const [myTurn, setMyTurn] = useState("false");
-    const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
+    // const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
 
 
   const copyLobbyCode = () => {
@@ -38,14 +38,7 @@ const HostGame = () => {
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
         if (storedUsername) {
-            setUsername(storedUsername);
-            // if (hosted === "false") {
-            //     newSocket.emit("hostRoom", { username: storedUsername });
-            //     setHosted("true");
-            // }
-            //newSocket.emit("hostRoom", { username: storedUsername });
-            //newSocket.emit("joinQueue", { roomID: lobbyCode, username: storedUsername });
-            
+            setUsername(storedUsername);    
         }
     }
 
@@ -61,9 +54,10 @@ const HostGame = () => {
     });
 
     newSocket.on('startGame', (data) => {
+        sessionStorage.setItem('roomID', data.gameState.roomID);
         console.log('Starting game:', data);
         setJoinedGame("true");
-        setGameState(data.gameState);
+        //setGameState(data.gameState);
         setMySymbol(data.symbol);
         // setMyTurn(data.myTurn);
         setOpponent(data.opponent);
@@ -175,7 +169,7 @@ const HostGame = () => {
                         </CardContent>
                     </Card>
                     ) : (
-                        <Board socket={socket} roomID={lobbyCode} gameStateInput = {gameState} />
+                        <Board />
                     )}
                 </div>
             </div>

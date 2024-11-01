@@ -10,7 +10,7 @@ import Board from '../board/page.tsx';
 const HostGame = () => {
   const [lobbyCode, setLobbyCode] = useState("Creating...");
   const [title, setTitle] = useState("Host Game");
-  const [socket, setSocket] = useState(null);
+  //const [socket, setSocket] = useState(null);
   const [username, setUsername] = useState("Player 1");
   const [opponent, setOpponent] = useState("Waiting...");
   const [hosted, setHosted] = useState("false");
@@ -32,16 +32,19 @@ const HostGame = () => {
   useEffect(() => {
     // Connect to WebSocket server
     const newSocket = io("http://localhost:5001", { withCredentials: true});
-    setSocket(newSocket);
+    //setSocket(newSocket);
     
 
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
         if (storedUsername) {
             setUsername(storedUsername);
-            if (hosted === "false") {
+            console.log("meow");
+            if (newSocket) {
+                console.log("emiit");
                 newSocket.emit("hostRoom", { username: storedUsername });
                 setHosted("true");
+                console.log("wtf");
             }
             //newSocket.emit("hostRoom", { username: storedUsername });
             //newSocket.emit("joinQueue", { roomID: lobbyCode, username: storedUsername });
@@ -58,6 +61,7 @@ const HostGame = () => {
 
     newSocket.on("roomIdGenerated", (data) => {
         setLobbyCode(data);
+        sessionStorage.setItem('roomID', data);
     });
 
     newSocket.on('startGame', (data) => {
@@ -155,7 +159,7 @@ const HostGame = () => {
             </CardContent>
         </Card>
         ) : (
-            <Board socket={socket} roomID={lobbyCode} gameStateInput = {gameState} />
+            <Board />
         )}
         
       </div>

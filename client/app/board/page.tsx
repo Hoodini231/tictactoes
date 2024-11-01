@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 interface SquareProps {
   value: string | null;
@@ -24,7 +25,7 @@ interface GameState {
   turnNumber: number;
 }
 
-const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
+const Board: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
     playerX: "",
     playerO: "",
@@ -40,21 +41,43 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
   const [playerTurn, setPlayerTurn] = useState<'X' | 'O'>('X');
   const [winner, setWinner] = useState<string | null>(null);
   const [username, setUsername] = useState<string>("");
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [roomID, setRoomID] = useState<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") { // Check if it's running on the client
       const storedUsername = sessionStorage.getItem("username");
+      const storedRoomID = sessionStorage.getItem("roomID");
+      console.log('Stored username:', storedUsername);
+      console.log('Stored roomID:', storedRoomID);
       if (storedUsername) {
         setUsername(storedUsername);
+      }
+      if (storedRoomID) {
+        console.log('Setting roomID:', storedRoomID);
+        setRoomID(storedRoomID);
       }
     }
   }, []);
 
   useEffect(() => {
+    const socket = io("http://localhost:5001", { withCredentials: true});
+    setSocket(socket);
+    if (typeof window !== "undefined") {
+      socket.emit("boardSocketJoin", sessionStorage.getItem("roomID"));
+    }
+
     if (socket) {
       socket.on('disconnect', () => {
         console.log('Disconnected from server:');
         // Attempt to reconnect
+      });
+
+      socket.on("boardSocketJoinedSuccessful", (data: { gameState: GameState }) => {
+        console.log('Joined board socket:', data.gameState);
+        setGameState(data?.gameState);
+        setBoard(data?.gameState?.board || Array(9).fill(null));
+        setIsXNext(true);
       });
 
       socket.on('startGame', (data: { gameState: GameState }) => {
@@ -81,7 +104,7 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
     } else {
       console.log("Socket not found");
     }
-  }, [socket]); // Add socket as a dependency
+  }, [roomID]); // Add socket as a dependency
 
   const calculateWinner = (squares: (string | null)[]) => {
     console.log('Checking for winner:', squares);
@@ -147,6 +170,7 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
 
     // Emit the updated game state to the server
     if (socket) {
+
       socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
     }
   };

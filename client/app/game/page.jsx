@@ -1,26 +1,25 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { v4 as uuidv4 } from "uuid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Board from '../board/page.tsx';
 
 
 const Game = () => {
-    const roomID = uuidv4();
     // const [roomID, setRoomID] = useState(uuidv4()); // Generate unique room ID;
     // const [myTurn, setMyTurn] = useState(true);
     const [mySymbol, setMySymbol] = useState('?');
     // const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
     const [opponentData, setOpponentData] = useState("Waiting...");
     const [username, setUsername] = useState("");
-    const [socket, setSocket] = useState(null);
+    //const [socket, setSocket] = useState(null);
+
 
 
     useEffect(() => {
         // Connect to WebSocket server
         const newSocket = io("http://localhost:5001", { withCredentials: true});
-        setSocket(newSocket);
+        //setSocket(newSocket);
         
 
         if (typeof window !== "undefined") { // Check if it's running on the client
@@ -28,7 +27,7 @@ const Game = () => {
             if (storedUsername) {
                 setUsername(storedUsername);
                 console.log("never reached");
-                newSocket.emit("joinQueue", { roomID: roomID, username: storedUsername });
+                newSocket.emit("joinQueue", { username: storedUsername });
                 
             }
         }
@@ -41,11 +40,20 @@ const Game = () => {
         //newSocket.emit("joinQueue", { roomID: roomID, username: username });
 
         newSocket.on("opponentFound", (data) => {
+            sessionStorage.setItem('roomID', data);
             setOpponentData(data);
+            
+        });
+
+        newSocket.on("roomIdGenerated", (data) => {
+            sessionStorage.setItem('roomID', data);
+            console.log("Room ID generated: ", data);
         });
 
         newSocket.on('startGame', (data) => {
             console.log('Starting game:', data);
+            console.log('data gamestate room id: ', data.gameState);
+            sessionStorage.setItem('roomID', data.gameState.roomID);
             // setGameState(data.gameState);
             setMySymbol(data.symbol);
             // setMyTurn(data.myTurn);
@@ -63,7 +71,7 @@ const Game = () => {
         return () => {
             newSocket.disconnect();
         };
-    },[username, roomID]);
+    },[]);
 
     return (
         
@@ -122,7 +130,7 @@ const Game = () => {
                 </div>
                     
                 ) : (
-                    <Board socket={socket} />
+                    <Board />
                 )}
         </div>
         </div>
