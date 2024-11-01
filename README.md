@@ -1,6 +1,8 @@
 # Accessible Tic-Tac-Toe Multiplayer Game
 
 A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, track their stats, and review each turn of completed matches, all while benefiting from intuitive user authentication.
+![image](https://github.com/user-attachments/assets/b0796ce1-6d3d-4108-abac-1969ccc37a2f)
+
 
 ---
 
