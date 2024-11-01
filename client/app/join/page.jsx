@@ -31,7 +31,7 @@ const HostGame = () => {
 
   useEffect(() => {
     // Connect to WebSocket server
-    const newSocket = io("http://localhost:5001", { withCredentials: true});
+    const newSocket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
     setSocket(newSocket);
     
 

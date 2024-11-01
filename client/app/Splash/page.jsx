@@ -35,7 +35,7 @@ export default function Splash() {
   };
 
   const signUp = () => {
-    Axios.post("http://localhost:5001/signup", signUpData).then((res) => {
+    Axios.post("https://tictactoes-5foa.onrender.com/signup", signUpData).then((res) => {
       const { userId, username, email } = res.data;
       cookies.set("userId", userId);
       cookies.set("username", username);
@@ -50,7 +50,7 @@ export default function Splash() {
 
   const login = () => {
     console.log("sending data")
-    Axios.post("http://localhost:5001/login", loginData).then((res) => {
+    Axios.post("https://tictactoes-5foa.onrender.com/login", loginData).then((res) => {
       const { userId, username, email } = res.data;
       console.log("received");
       console.log(res.data);
