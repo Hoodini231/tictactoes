@@ -177,5 +177,9 @@ const Board = ({ socket, gameStateInput }) => {
     </div>
   );
 };
+Board.propTypes = {
+  socket: PropTypes.any.isRequired,
+  gameStateInput: PropTypes.any.isRequired,
+};
 
 export default Board;
