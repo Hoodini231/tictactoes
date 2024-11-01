@@ -158,7 +158,7 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
     />
   );
 
-  return (
+  return [
     <div className="tictactoe">
       <div className="status">
         {winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'}`}
@@ -181,7 +181,7 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
         </div>
       </div>
     </div>
-  );
+  ];
 };
 
 export default Board;
