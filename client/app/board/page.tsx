@@ -87,7 +87,7 @@ const Board: React.FC<BoardProps> = ({ socket, gameStateInput }) => {
       [0, 4, 8], [2, 4, 6]             // diagonals
     ];
 
-    for (let [a, b, c] of winningLines) {
+    for (const [a, b, c] of winningLines) {
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
         console.log(`Winner found: ${squares[a]} at indices ${a}, ${b}, ${c}`);
         return { winner: squares[a], line: [a, b, c] };

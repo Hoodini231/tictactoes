@@ -63,7 +63,7 @@ const Game = () => {
         return () => {
             newSocket.disconnect();
         };
-    },[username]);
+    },[username, roomID]);
 
     return (
         
