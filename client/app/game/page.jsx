@@ -11,7 +11,7 @@ const Game = () => {
     // const [roomID, setRoomID] = useState(uuidv4()); // Generate unique room ID;
     // const [myTurn, setMyTurn] = useState(true);
     const [mySymbol, setMySymbol] = useState('?');
-    const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
+    // const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
     const [opponentData, setOpponentData] = useState("Waiting...");
     const [username, setUsername] = useState("");
     const [socket, setSocket] = useState(null);
@@ -46,7 +46,7 @@ const Game = () => {
 
         newSocket.on('startGame', (data) => {
             console.log('Starting game:', data);
-            setGameState(data.gameState);
+            // setGameState(data.gameState);
             setMySymbol(data.symbol);
             // setMyTurn(data.myTurn);
             setOpponentData(data.opponent);
