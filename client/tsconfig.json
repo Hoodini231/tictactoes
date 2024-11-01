@@ -19,8 +19,9 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": ["@types/d3-time"] // Add this line
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/board/page.jsx", "app/home/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/board/page.tsx", "app/home/page.jsx"],
   "exclude": ["node_modules"]
 }

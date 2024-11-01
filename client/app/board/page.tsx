@@ -1,76 +1,85 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { Socket } from 'socket.io-client';
 
+interface SquareProps {
+  value: string | null;
+  onClick: () => void;
+}
 
-// Single square component
-const Square = ({ value, onClick }) => (
+const Square: React.FC<SquareProps> = ({ value, onClick }) => (
   <button className={`square ${value}`} onClick={onClick}>
     {value}
   </button>
 );
 
-// Main TicTacToe game component
-const Board =
- ({ socket, gameStateInput }) => {
-  const [gameState, setGameState] = useState(gameStateInput);
-  const [board, setBoard] = useState(gameStateInput?.board || Array(9).fill(null));
+interface GameState {
+  playerX: string;
+  playerO: string;
+  board: (string | null)[];
+  roomID: string;
+  lastTurn: string;
+  winner: string | null;
+  status: string;
+  turnNumber: number;
+}
+
+interface BoardProps {
+  socket: Socket | null;
+  gameStateInput: GameState;
+}
+
+const Board: React.FC<BoardProps> = ({ socket, gameStateInput }) => {
+  const [gameState, setGameState] = useState<GameState>(gameStateInput);
+  const [board, setBoard] = useState<(string | null)[]>(gameStateInput?.board || Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
-  const [playerTurn, setPlayerTurn] = useState('X');
-  const [winner, setWinner] = useState(null);
-  const [username, setUsername] = useState("");
+  const [playerTurn, setPlayerTurn] = useState<'X' | 'O'>('X');
+  const [winner, setWinner] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") { // Check if it's running on the client
-        const storedUsername = sessionStorage.getItem("username");
-        if (storedUsername) {
-            setUsername(storedUsername);
-        }
+      const storedUsername = sessionStorage.getItem("username");
+      if (storedUsername) {
+        setUsername(storedUsername);
+      }
     }
-}, []);
+  }, []);
 
   useEffect(() => {
     if (socket) {
-      socket.on('disconnect', (reason) => {
-        console.log('Disconnected from server:', reason);
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server:');
         // Attempt to reconnect
       });
-      socket.on('startGame', (data) => {
+
+      socket.on('startGame', (data: { gameState: GameState }) => {
         console.log('Starting game in board:', data);
         setGameState(data?.gameState);
         setBoard(data?.gameState?.board || Array(9).fill(null));
         setIsXNext(true);
       });
 
-      socket.on('playerMoved', (data) => {
+      socket.on('playerMoved', (data: { gameState: GameState }) => {
         console.log('Move received:', data.gameState);
         setGameState(data.gameState);
         setBoard(data.gameState.board);
-        if (data.gameState.lastTurn === 'X') {
-          setPlayerTurn('O');
-          setIsXNext(false);
-          console.log("setting isXNext to false");
-        } else {
-          setPlayerTurn('X');
-          setIsXNext(true);
-          console.log("setting isXNext to true");
-        }
+        setPlayerTurn(data.gameState.lastTurn === 'X' ? 'O' : 'X');
+        setIsXNext(data.gameState.lastTurn !== 'X');
       });
 
       // Clean up the listeners on component unmount or when socket changes
       return () => {
         console.log("clean up!");
         socket.off('startGame');
-        socket.off('playerOMoved');
-        socket.off('playerXMoved');
+        socket.off('playerMoved');
       };
     } else {
       console.log("Socket not found");
     }
   }, [socket]); // Add socket as a dependency
 
-  // Function to check for a winner and return the winning line
-  const calculateWinner = (squares) => {
+  const calculateWinner = (squares: (string | null)[]) => {
     console.log('Checking for winner:', squares);
     const winningLines = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
@@ -91,7 +100,6 @@ const Board =
   const isBoardFull = board.every(square => square !== null);
   const isTie = isBoardFull && !winnerInfo;
 
-  // Update winner state
   useEffect(() => {
     if (winnerInfo) {
       setWinner(winnerInfo.winner);
@@ -100,20 +108,12 @@ const Board =
     }
   }, [winnerInfo]);
 
-  // useEffect(() => {
-  //   emitMove();
-  // }, [gameState]);
-
-  useEffect(() => {
-    console.log("isXNext updated:", isXNext);
-}, [isXNext]);
-
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     if (
-        board[index] || 
-        winner || 
-        (playerTurn === 'X' && username !== gameState.playerX) || 
-        (playerTurn === 'O' && username !== gameState.playerO)
+      board[index] || 
+      winner || 
+      (playerTurn === 'X' && username !== gameState.playerX) || 
+      (playerTurn === 'O' && username !== gameState.playerO)
     ) return; // Ignore click if square is filled or game has a winner
 
     // Update the board with the new move
@@ -125,16 +125,16 @@ const Board =
     const winnerInfo = calculateWinner(newBoard);
 
     // Create updated game state with winner and game status
-    console.log( winnerInfo?.winner);
-    const newGameState = {
-        playerX: gameState.playerX,
-        playerO: gameState.playerO,
-        board: newBoard,
-        roomID: gameState.roomID,
-        lastTurn: isXNext ? 'X' : 'O',
-        winner: winnerInfo ? winnerInfo?.winner : "none",
-        status: winnerInfo?.winner ?"complete" : "incomplete",
-        turnNumber: gameState.turnNumber + 1
+    console.log(winnerInfo?.winner);
+    const newGameState: GameState = {
+      playerX: gameState.playerX,
+      playerO: gameState.playerO,
+      board: newBoard,
+      roomID: gameState.roomID,
+      lastTurn: isXNext ? 'X' : 'O',
+      winner: winnerInfo ? winnerInfo?.winner : "none",
+      status: winnerInfo?.winner ? "complete" : "incomplete",
+      turnNumber: gameState.turnNumber + 1
     };
 
     // Update game state locally
@@ -143,22 +143,21 @@ const Board =
 
     // Emit the updated game state to the server
     if (socket) {
-        socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
+      socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
     }
   };
 
-  const renderSquare = (index) => (
+  const renderSquare = (index: number) => (
     <Square
       value={board[index]}
       onClick={() => handleClick(index)}
-      highlight={winnerInfo?.line.includes(index)} // Highlight square if it's part of the winning line
     />
   );
 
   return (
     <div className="tictactoe">
       <div className="status">
-        {winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player:` + (isXNext ? 'X' : 'O')}
+        {winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'}`}
       </div>
       <div className="board">
         <div className="row">
@@ -179,10 +178,6 @@ const Board =
       </div>
     </div>
   );
-};
-Board.propTypes = {
-  socket: PropTypes.object.isRequired,
-  gameStateInput: PropTypes.object.isRequired,
 };
 
 export default Board;
