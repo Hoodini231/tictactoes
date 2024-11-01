@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { io } from "socket.io-client";
-import Board from '../board/page';
+import {Board} from '../board/page';
 
 const HostGame = () => {
     const [lobbyCode, setLobbyCode] = useState("");

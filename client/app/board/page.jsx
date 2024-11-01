@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+
 // Single square component
 const Square = ({ value, onClick }) => (
   <button className={`square ${value}`} onClick={onClick}>
@@ -10,7 +11,7 @@ const Square = ({ value, onClick }) => (
 );
 
 // Main TicTacToe game component
-const Board = ({ socket, gameStateInput }) => {
+export const Board = ({ socket, gameStateInput }) => {
   const [gameState, setGameState] = useState(gameStateInput);
   const [board, setBoard] = useState(gameStateInput?.board || Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
@@ -178,9 +179,9 @@ const Board = ({ socket, gameStateInput }) => {
     </div>
   );
 };
-Board.propTypes = {
-  socket: PropTypes.any.isRequired,
-  gameStateInput: PropTypes.any.isRequired,
-};
+// Board.propTypes = {
+//   socket: PropTypes.any.isRequired,
+//   gameStateInput: PropTypes.any.isRequired,
+// };
 
-export default Board;
+// export default Board;
