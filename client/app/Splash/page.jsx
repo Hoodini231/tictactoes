@@ -25,7 +25,7 @@ export default function Splash() {
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
         if (storedUsername) {
-            setUsername(storedUsername);
+            //setUsername(storedUsername);
         }
     }
 }, []);
