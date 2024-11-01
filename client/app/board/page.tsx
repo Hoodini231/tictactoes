@@ -28,7 +28,7 @@ interface BoardProps {
   socket: Socket | null;
 }
 
-const Board: React.FC<BoardProps> = ({ socket }) => {
+const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
   const [gameState, setGameState] = useState<GameState>({
     playerX: "",
     playerO: "",
