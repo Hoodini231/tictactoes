@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 // Single square component
 const Square = ({ value, onClick }) => (
-  <button className={`square ${value === 'X' ? "bg-red-500" : "bg-green-500"}`} onClick={onClick}>
+  <button className={`square ${value}`} onClick={onClick}>
     {value}
   </button>
 );
@@ -17,7 +17,8 @@ const Board = ({ socket, roomID, gameStateInput }) => {
   const [playerTurn, setPlayerTurn] = useState('X');
   const [winner, setWinner] = useState(null);
   let gameStateCopy = gameStateInput;
-  const [username, setUsername] = useState("dumb");
+  const [username, setUsername] = useState("");
+
   useEffect(() => {
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
@@ -44,8 +45,6 @@ const Board = ({ socket, roomID, gameStateInput }) => {
         console.log('Move received:', data.gameState);
         setGameState(data.gameState);
         setBoard(data.gameState.board);
-        console.log("last move: ", data.gameState.lastMove);
-        console.log("last move = x? : ", data.gameState.lastMove === 'X');
         if (data.gameState.lastTurn === 'X') {
           setPlayerTurn('O');
           setIsXNext(false);

@@ -53,7 +53,8 @@ app.use(bodyParser.json({
     parameterLimit: 10000
 }))
 
-const waitingQueue = [];
+let waitingQueue = [];
+let rooms = new Map();
 
 io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -74,7 +75,7 @@ io.on("connection", (socket) => {
             player1.socket.roomID = roomID;
             player2.socket.roomID = roomID;
             player1.socket.username = player1.username;
-            player2.socket.roomID = player2.username;
+            player2.socket.username = player2.username;
             let p1_symbol = 'X';
             let p2_symbol = 'O';
             if (Math.random() < 0.5) {
@@ -124,9 +125,75 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("hostRoom", ({username}) => {
+        const roomID = uuidv4().substring(0, 10);
+        socket.roomID = roomID;
+        socket.username = username;
+        socket.join(roomID);
+        console.log("host roomID: ", roomID);
+        console.log("rooms.get: ", io.sockets.adapter.rooms.get(roomID));
+        rooms.set(roomID, { host: username, hostSocket: socket.id });
+        console.log("Hosted room:", roomID);
+        //io.to(socket.id).emit("roomIdGenerated", roomID);
+        io.to(roomID).emit("roomIdGenerated", roomID);
+    });
+
+    socket.on("joinRoom", ({roomID, username}) => {
+        console.log("attempted join");
+        console.log("join roomdID: " + roomID);
+        console.log("join rooms.get: ", io.sockets.adapter.rooms.get(roomID));
+        io.to(roomID).emit("roomJoined", { message: "sup" });
+        const room = io.sockets.adapter.rooms.get(roomID);
+        if (room && room.size === 1) {
+            io.to(socket.id).emit("roomJoined", { message: "Room joined " + roomID });
+            const existingPlayer = Array.from(room)[0];
+            socket.join(roomID);
+            socket.username = socket.id; // Assuming socket.id is used as username
+            const hostUsername = rooms.get(roomID).host;
+            const hostSocket = rooms.get(roomID).hostSocket;
+            let p1_symbol = 'X';
+            let p2_symbol = 'O';
+            if (Math.random() < 0.5) {
+                p1_symbol = 'O';
+                p2_symbol = 'X';
+            }
+
+            const gameState = {
+                playerX: p1_symbol === 'X' ? hostUsername : username,
+                playerO: p1_symbol === 'O' ? hostUsername : username,
+                roomID: roomID,
+                lastTurn: null,
+                board: Array(9).fill(null),
+                winner: null,
+                status: 'progress',
+                turnNumber: 0
+            };
+
+            const player1Data = {
+                symbol: p1_symbol,
+                myTurn: p1_symbol === 'X',
+                gameState: gameState,
+                opponent: username
+            };
+            const player2Data = {
+                symbol: p2_symbol,
+                myTurn: p2_symbol === 'X',
+                gameState: gameState,
+                opponent: hostUsername
+            };
+
+            io.to(hostSocket).emit("startGame", player1Data);
+            io.to(socket.id).emit("startGame", player2Data);
+        } else {
+            io.to(socket.id).emit("roomFull", { message: "Room is full" });
+        }
+    });
+
     socket.on("disconnect", () => {
-        console.log("A user disconnected:", socket.id);
-        //socket.emit("disconnect", { message: "user has disconnected"});
+        console.log("dced ", socket.id);
+        if (!socket.roomID) {
+            waitingQueue = waitingQueue.filter((player) => player.socket.id !== socket.id);
+        }
     });
 });
 
@@ -233,6 +300,47 @@ app.post("/login", async (req, res) => {
  * Create a new temporary user account for the guest with random username
  * Then delete account after some time.
  */
-app.post("/play-as-guest", (req, res) => {
+app.post("/play-as-guest", async (req, res) => {
+    try {
+        const anonUser = new User({
+            username: `guest-${uuidv4().substring(0, 9)}`,
+            email: `guest-${uuidv4().substring(0, 9)}@fake.com`,
+            password: await bcrypt.hash(uuidv4(), 10),
+            userId: uuidv4()
+        });
+        await anonUser.save();
+        res.json({ username: anonUser.username, password: anonUser.password});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
+app.get("/findUser", async (req, res) => {
+    try {
+        const username = req.query.username;
+        const user = await User.find({ username });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/fetchUserGames", async (req, res) => {
+    try {
+        const username = req.query.username;
+        const games = await Game.find({ $or: [{ playerX: username }, { playerO: username }] });
+        res.json(games);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/fetchGameData", async (req, res) => {
+    try {
+        const gameID = req.query.gameID; 
+        const gameData = await Game.find({ gameID }).sort({ turnNumber: 1 }); 
+        res.json(gameData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });

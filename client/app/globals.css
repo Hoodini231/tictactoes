@@ -107,6 +107,14 @@ body {
   margin-bottom: 20px;
 }
 
+.player-card {
+  background: white;
+  align-items: center;
+  font-size: 3rem;
+  text-align: center;
+
+}
+
 .player {
   font-size: 18px;
 }
@@ -121,12 +129,20 @@ body {
 }
 
 .spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #000;
+  border: 6px solid rgba(1, 87, 9, 0.1);
+  border-left-color: #09f898;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 200px;
+  height: 200px;
   animation: spin 1s linear infinite;
+}
+
+.textX {
+  color: #fe1717;
+}
+
+.textO {
+  color: #1c9800;
 }
 
 
@@ -145,19 +161,19 @@ body {
 .board {
   display: inline-grid;
   grid-template-columns: repeat(3, 100px);
-  gap: 5px;
+  gap: 52px;
 }
 
 .square {
-  width: 100px;
-  height: 100px;
-  font-size: 2em;
+  width: 150px;
+  height: 150px;
+  font-size: 6em;
   font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #fa5b5b; /* High-contrast dark borders */
+  border: 3px solid #020202; /* High-contrast dark borders */
   background-color: #e8e5e5; /* White background */
   color: #333; /* Dark text for contrast */
   border-radius: 8px; /* Slightly rounded corners */
@@ -169,8 +185,17 @@ body {
   color: #fff; /* White text on focus */
 }
 
+
 .square:hover {
   background-color: #1b499f; /* Light grey hover effect */
+}
+
+.X {
+  background-color:#fe1717
+}
+
+.O {
+  background-color:#3ce316
 }
 
 .status {
