@@ -122,7 +122,7 @@ const Game = () => {
                 </div>
                     
                 ) : (
-                    <Board socket={socket} gameStateInput = {gameState} />
+                    <Board socket={socket} />
                 )}
         </div>
         </div>

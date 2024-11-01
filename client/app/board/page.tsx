@@ -26,12 +26,20 @@ interface GameState {
 
 interface BoardProps {
   socket: Socket | null;
-  gameStateInput: GameState;
 }
 
-const Board: React.FC<BoardProps> = ({ socket, gameStateInput }) => {
-  const [gameState, setGameState] = useState<GameState>(gameStateInput);
-  const [board, setBoard] = useState<(string | null)[]>(gameStateInput?.board || Array(9).fill(null));
+const Board: React.FC<BoardProps> = ({ socket }) => {
+  const [gameState, setGameState] = useState<GameState>({
+    playerX: "",
+    playerO: "",
+    board: Array(9).fill(null),
+    roomID: "",
+    lastTurn: "",
+    winner: null,
+    status: "",
+    turnNumber: 0
+  });
+  const [board, setBoard] = useState<(string | null)[]>(gameState?.board || Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [playerTurn, setPlayerTurn] = useState<'X' | 'O'>('X');
   const [winner, setWinner] = useState<string | null>(null);
