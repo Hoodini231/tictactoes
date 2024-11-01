@@ -16,7 +16,7 @@ const HostGame = () => {
   const [hosted, setHosted] = useState("false");
   const [mySymbol, setMySymbol] = useState("?");
 //   const [myTurn, setMyTurn] = useState("false");
-  const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
+  //const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
 
   const copyLobbyCode = () => {
     navigator.clipboard.writeText(lobbyCode)
@@ -66,7 +66,7 @@ const HostGame = () => {
 
     newSocket.on('startGame', (data) => {
         console.log('Starting game:', data);
-        setGameState(data.gameState);
+        //setGameState(data.gameState);
         setMySymbol(data.symbol);
         // setMyTurn(data.myTurn);
         setOpponent(data.opponent);
