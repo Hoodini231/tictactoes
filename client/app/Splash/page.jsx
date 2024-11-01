@@ -11,20 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Axios from "axios";
 import Cookies from "universal-cookie";
 
-
-
 export default function Splash() {
   const router = useRouter();
   const cookies = new Cookies();
   const [loginData, setLoginData] = useState({ username: '', password: '' }); // Initialize with empty strings
   const [signUpData, setSignUpData] = useState({ username: '', email: '', password: '' }); // Initialize with empty strings
   const [activeTab, setActiveTab] = useState("login");
-  //const navigate = useNavigate();
   
   const storeUsername = (username) => {
     sessionStorage.setItem('username', username);
   }
-  const [username, setUsername] = useState("");
   useEffect(() => {
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");

@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const HostGame = () => {
     const [opponent, setOpponent] = useState("Waiting...");
     const [joinedGame, setJoinedGame] = useState("false");
     const [mySymbol, setMySymbol] = useState("?");
-    const [myTurn, setMyTurn] = useState("false");
+    // const [myTurn, setMyTurn] = useState("false");
     const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
 
 
@@ -65,7 +65,7 @@ const HostGame = () => {
         setJoinedGame("true");
         setGameState(data.gameState);
         setMySymbol(data.symbol);
-        setMyTurn(data.myTurn);
+        // setMyTurn(data.myTurn);
         setOpponent(data.opponent);
         //setGameState(data); // Update game state with received data
     });

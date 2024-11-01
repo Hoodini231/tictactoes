@@ -1,5 +1,4 @@
 "use client";
-import { emit } from 'process';
 import React, { useEffect, useState } from 'react';
 
 // Single square component
@@ -10,13 +9,12 @@ const Square = ({ value, onClick }) => (
 );
 
 // Main TicTacToe game component
-const Board = ({ socket, roomID, gameStateInput }) => {
+const Board = ({ socket, gameStateInput }) => {
   const [gameState, setGameState] = useState(gameStateInput);
   const [board, setBoard] = useState(gameStateInput?.board || Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [playerTurn, setPlayerTurn] = useState('X');
   const [winner, setWinner] = useState(null);
-  let gameStateCopy = gameStateInput;
   const [username, setUsername] = useState("");
 
   useEffect(() => {
@@ -54,11 +52,6 @@ const Board = ({ socket, roomID, gameStateInput }) => {
           setIsXNext(true);
           console.log("setting isXNext to true");
         }
-        
-      });
-
-      socket.on('test', (data) => {
-        console.log('test:');
       });
 
       // Clean up the listeners on component unmount or when socket changes
@@ -127,7 +120,6 @@ const Board = ({ socket, roomID, gameStateInput }) => {
 
     // Check if this move results in a winner
     const winnerInfo = calculateWinner(newBoard);
-    const isCompleted = winnerInfo ? "complete" : "incomplete";
 
     // Create updated game state with winner and game status
     console.log( winnerInfo?.winner);

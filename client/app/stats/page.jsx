@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 const data = [
@@ -67,16 +67,6 @@ const Dashboard = () => {
           <CardContent>
             <p className="text-2xl font-bold">E4</p>
             <p className="text-sm text-muted-foreground">Used in 65% of games</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Most Successful Strategy</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">Queen's Gambit</p>
-            <p className="text-sm text-muted-foreground">80% win rate</p>
           </CardContent>
         </Card>
 

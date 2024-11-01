@@ -1,14 +1,15 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from "uuid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Board from '../board/page';
 
 
 const Game = () => {
-    const [roomID, setRoomID] = useState(uuidv4()); // Generate unique room ID;
-    const [myTurn, setMyTurn] = useState(true);
+    const roomID = uuidv4();
+    // const [roomID, setRoomID] = useState(uuidv4()); // Generate unique room ID;
+    // const [myTurn, setMyTurn] = useState(true);
     const [mySymbol, setMySymbol] = useState('?');
     const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
     const [opponentData, setOpponentData] = useState("Waiting...");
@@ -47,7 +48,7 @@ const Game = () => {
             console.log('Starting game:', data);
             setGameState(data.gameState);
             setMySymbol(data.symbol);
-            setMyTurn(data.myTurn);
+            // setMyTurn(data.myTurn);
             setOpponentData(data.opponent);
             //setGameState(data); // Update game state with received data
         });
@@ -121,7 +122,7 @@ const Game = () => {
                 </div>
                     
                 ) : (
-                    <Board socket={socket} roomID={roomID} gameStateInput = {gameState} />
+                    <Board socket={socket} gameStateInput = {gameState} />
                 )}
         </div>
         </div>

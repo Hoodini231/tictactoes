@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ const HostGame = () => {
   const [opponent, setOpponent] = useState("Waiting...");
   const [hosted, setHosted] = useState("false");
   const [mySymbol, setMySymbol] = useState("?");
-  const [myTurn, setMyTurn] = useState("false");
+//   const [myTurn, setMyTurn] = useState("false");
   const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
 
   const copyLobbyCode = () => {
@@ -64,7 +64,7 @@ const HostGame = () => {
         console.log('Starting game:', data);
         setGameState(data.gameState);
         setMySymbol(data.symbol);
-        setMyTurn(data.myTurn);
+        // setMyTurn(data.myTurn);
         setOpponent(data.opponent);
         setTitle("Tic Tac Toes");
         //setGameState(data); // Update game state with received data
@@ -81,7 +81,7 @@ const HostGame = () => {
     return () => {
         newSocket.disconnect();
     };
-}, []);
+}, [hosted]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-purple-900 flex flex-col items-center justify-start p-4">
