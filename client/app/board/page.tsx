@@ -159,7 +159,7 @@ const Board: React.FC<{ socket: Socket | null }> = ({ socket }) => {
   );
 
   return [
-    <div className="tictactoe">
+    <div className="tictactoe" key="board-container">
       <div className="status">
         {winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'}`}
       </div>
