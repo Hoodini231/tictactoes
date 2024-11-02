@@ -121,9 +121,29 @@ io.on("connection", (socket) => {
 
     socket.on("playerWon", ({ roomID, gameState }) => {
         try {
-            console.log("plaeyr won");
             io.to(roomID.toString()).emit("playerWon", { gameState });
             uploadGameState(gameState);
+            updateUserData(gameState);
+        } catch (error) {
+            console.log("Error in playerWon:", error);
+        }
+    });
+
+    socket.on("playerTied", ({ roomID, gameState }) => {
+        try {
+            //io.to(roomID.toString()).emit("playerWon", { gameState });
+            const finalGameState = new Game({
+                winner: 'tied',
+                gameID: gameState.roomID,
+                playerX: gameState.playerX,
+                playerO: gameState.playerO,
+                lastUpdate: new Date(),
+                board: gameState.board,
+                lastTurn: gameState.lastTurn,
+                status: "complete",
+                turnNumber: gameState.turnNumber
+            });
+            uploadGameState(finalGameState);
             updateUserData(gameState);
         } catch (error) {
             console.log("Error in playerWon:", error);

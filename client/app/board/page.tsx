@@ -210,7 +210,10 @@ const Board: React.FC = () => {
     if (socket) {
       if (winnerInfo) {
         socket.emit("playerWon", { roomID: newGameState.roomID, gameState: newGameState });
-      } else {
+      } else if(isTie || isBoardFull) {
+        socket.emit("gameTied", { roomID: newGameState.roomID, gameState: newGameState });
+      }
+      else {
         socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
       }
     }
