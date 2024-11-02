@@ -188,7 +188,8 @@ body {
 
 
 .square:hover {
-  background-color: #fff; /* Light grey hover effect */
+  background-color: #1b499f;
+  border: 3px solid #fff; /* Light grey hover effect */
 }
 
 .X {
