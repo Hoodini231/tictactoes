@@ -188,7 +188,7 @@ const Board: React.FC = () => {
   );
 
   return [
-    <div className="game-container flex">
+  <div className="game-container flex" key="board-and-gameinfo-container">
   <div className="tictactoe items-center" key="board-container">
     <div aria-label={winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'} label`} className="status">
       <p className="text-2xl font-bold text-center mb-4">{winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Player Turn: ${isXNext ? gameState.playerX + ' (X)' : gameState.playerO + '(O)'}  `}</p>
