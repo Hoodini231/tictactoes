@@ -2,7 +2,7 @@
 
 [Play here](https://tictactoes-wqsc.vercel.app)
 
-A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, track their stats, and review each turn of completed matches, all while benefiting from intuitive user authentication.
+A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, track their stats, and review each turn of completed matches, all while benefiting from intuitive user authentication. Overall, attempted to balance pleasant UI design with accessibility, thus, I opted for a coloured background with white cards to remain stylish yet high contrast.
 
 ![image](https://github.com/user-attachments/assets/b0796ce1-6d3d-4108-abac-1969ccc37a2f)
 
