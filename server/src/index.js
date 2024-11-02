@@ -3,7 +3,6 @@ import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import bodyParser from "body-parser";
-import { ServerClient } from "postmark";
 import mongoose from "mongoose";
 import User from "./models/user.js";
 import Game from "./models/games.js";
