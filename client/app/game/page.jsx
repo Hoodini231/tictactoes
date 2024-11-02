@@ -55,7 +55,7 @@ const Game = () => {
         <div className="game-container relative flex flex-col items-center gap-4 p-6 w-screen min-h-screen bg-gradient-to-b from-blue-900 to-purple-700">
             <button 
                 aria-label="Back button"
-                className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-blue-600"
+                className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-green-600"
                 onClick={() => window.history.back()}
             >
                 Back
