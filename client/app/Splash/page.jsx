@@ -43,7 +43,7 @@ const navigateToHome = () => {
 
   const signUp = () => {
     Axios.post("https://tictactoes-5foa.onrender.com/signup", signUpData).then((res) => {
-      const { userId, username, email } = res.data;
+      const { username } = res.data;
       storeUsername(username);
       navigateToHome();
     }).catch((error) => {
@@ -54,7 +54,7 @@ const navigateToHome = () => {
   const login = () => {
     console.log("sending data")
     Axios.post("https://tictactoes-5foa.onrender.com/login", loginData).then((res) => {
-      const { userId, username, email } = res.data;
+      const { username } = res.data;
       storeUsername(username);
       navigateToHome();
     }).catch((error) => {
