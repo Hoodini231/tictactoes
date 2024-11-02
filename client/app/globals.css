@@ -175,7 +175,7 @@ body {
   justify-content: center;
   border: 3px solid #020202; /* High-contrast dark borders */
   background-color: #e8e5e5; /* White background */
-  color: #333; /* Dark text for contrast */
+  color: #000000; /* Dark text for contrast */
   border-radius: 8px; /* Slightly rounded corners */
   transition: background-color 0.2s ease;
 }
@@ -191,7 +191,7 @@ body {
 }
 
 .X {
-  background-color:#fe1717
+  background-color:#EB0004
 }
 
 .O {
@@ -222,8 +222,8 @@ body {
 }
 
 .square.highlight {
-  background-color: #fe1c1c; /* Light blue for high contrast */
-  border: 2px solid #fe1717; /* Dark blue border */
+  background-color: #1b499f; /* Light blue for high contrast */
+  border: 2px solid #000000; /* Dark blue border */
 }
 
 
