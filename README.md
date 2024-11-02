@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/fecae928-3160-4be3-a8ca-70337f45db4f)# Accessible Tic-Tac-Toe Multiplayer Game
+# Accessible Tic-Tac-Toe Multiplayer Game
 
 [Play here](https://tictactoes-wqsc.vercel.app)
 
