@@ -10,6 +10,7 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 
 ## Table of Contents
 - [Tech Stack](#tech-stack)
+- [Assumptions](#assumptions)
 - [Features](#features)
 - [Accessibility](#accessibility)
 - [Installation](#installation)
@@ -25,6 +26,12 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 - **Database**: [MongoDB](https://www.mongodb.com/) - to manage game data, user accounts, and game history.
 - **Deployment**: Leveraged Vercel to host front-end serverless deployment and Render for backend web service deployment.
 
+---
+## Assumptions
+- Users won't spam squares and produce a long audio queue for indicating which square is in focus.
+- Users who rely on keyboard naviability are familiar with it.
+- Trivial implmentation of user authentication and sign up where password strength and valid emails are not checked.
+- User will not be active on the same account on two instances or more at the same time.
 ---
 
 ## Features
@@ -44,6 +51,10 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 
 ### 4. **Guest Player Availability**
    - Users can play through automatically generated guest accounts.
+     
+### 5. **Text to speech gameplay for visually impaired**
+   - Users are able to recieve audio queues for who's turn it is and what square is currently in focus.
+   - (In future) Users will be able to opt in / out of this and it should also indicate if the square is empty or not.
 
 ### 5. **User Dashboard**
    - **Game Statistics**: View stats like total games played, wins, losses, and ties.
@@ -57,22 +68,29 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
    - **Labels for clarity** Added sub-labels for color blind or those who struggle reading.
    - **Aria label support for screen readers for the visually impaired** Added aria-label support for those using screen readers.
    - **Full keyboard navigability for motor impaired** Added full page functionality and navigability via [TAB] and [ENTER]. Highlighted them distinct colors for the visually impaired.
+---
+## Accessibility
+Accessibility was central to the design of this solution to ensure inclusivity for users with visual impairments or colorblindness. High-contrast colors were chosen carefully, meeting WCAG 2.1 Level AA guidelines to improve readability, especially for users with low vision or color sensitivity. This allows all text and interactive elements to be easily distinguishable.
+
+ARIA labels were applied to all key components, providing screen reader users with descriptive cues to navigate the interface effectively. Keyboard navigability was prioritized across the application, enabling users to interact with every feature without needing a mouse. Focus indicators were made distinct, allowing users to follow their position on the page with ease.
+
+To accommodate colorblind users, redundant cues like icons and text labels were added alongside color indicators, ensuring important information isn’t solely conveyed by color. These combined accessibility features create a more inclusive and user-friendly experience for everyone.
 
 ---
 ## User Guide
-1. **Access Splash page**
+1. **Access Splash page**<br>
    Login, Sign up or play as guest!
-2. **Multiplayer Access***
-   - Playing with random
+2. **Multiplayer Access**<br>
+   - Playing with random<br>
      Wait for another random opponent to join the queue!
-   - Hosting lobby
+   - Hosting lobby<br>
      Wait for a friend to join with the custom lobby code!
-   - Join lobby
+   - Join lobby<br>
      Enter a valid active lobby code to join the host!
-3. **Playing the game**
-   Alternate turns with the other player! Player X always starts first but the player assignment is randomised!
-   Select an empty box to place your symbol in via using [TAB] to select the highlighted box in dark blue or the mouse. Press [ENTER] or click the mouse to finalize the submission.
-   See game instructions below the board during the game for refreshers!
+3. **Playing the game**<br>
+   - Alternate turns with the other player! Player X always starts first but the player assignment is randomised!
+   - Select an empty box to place your symbol in via using <Strong>[TAB]</Strong> to select the highlighted box in dark blue or the <Strong>mouse</Strong>. Press <Strong>[ENTER]</Strong> or click the <Strong>mouse</Strong> to finalize the submission.
+   - See game instructions below the board during the game for refreshers!
 4. **Use either the browser back button or the native back button at the top left of the screen**
 
 
@@ -106,6 +124,12 @@ Not recommended as it is already publically hosted.
    
 ## Architecture Diagram
 <img width="1312" alt="image" src="https://github.com/user-attachments/assets/2bf1b2fe-8f35-44cc-ad30-de417dd93f30">
+
+## API Examples
+<img width="842" alt="image" src="https://github.com/user-attachments/assets/006d552e-4cbc-40c8-a3c4-d65ad2fc40dd">
+
+<img width="824" alt="image" src="https://github.com/user-attachments/assets/af82ec59-f57f-4138-9cec-218694f29e65">
+
 
 
 ## Graphic Examples
