@@ -11,7 +11,7 @@ const Game = () => {
     const [username, setUsername] = useState("");
     useEffect(() => {
         const newSocket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
-
+        // const newSocket = io("http://localhost:5001", { withCredentials: true});
         if (typeof window !== "undefined") { // Check if it's running on the client
             const storedUsername = sessionStorage.getItem("username");
             if (storedUsername) {

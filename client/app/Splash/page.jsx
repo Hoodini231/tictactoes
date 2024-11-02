@@ -95,11 +95,11 @@ const navigateToHome = () => {
               <TabsContent value="login">
                 <form>
                   <div className="grid w-full items-center gap-8">
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-2 focus:outline focus:outline-3 focus:outline-red-500 ">
                       <Label aria-label="Username label" htmlFor="login-email" className="text-black font-bold text-lg">Username</Label>
                       <Input aria-label="Username Input" id="login-email" placeholder="Enter your username" onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}/>
                     </div>
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-2 focus:outline focus:outline-3 focus:outline-red-500 ">
                       <Label aria-label="password label" htmlFor="login-password" className="text-black font-bold text-lg">Password</Label>
                       <Input aria-label="password input" id="login-password" type="password" placeholder="Enter your password" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}/>
                     </div>
@@ -109,17 +109,17 @@ const navigateToHome = () => {
               <TabsContent aria-label="signup tab" value="signup">
                 <form>
                   <div className="grid w-full items-center gap-4">
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col space-y-3 focus:outline focus:outline-3 focus:outline-red-500 ">
                       <Label aria-label="username label" htmlFor="signup-name" className="text-black font-bold text-lg">Username</Label>
                       <Input aria-label="username input" id="signup-name" placeholder="Enter your username" onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}/>
                     </div>
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col space-y-3 focus:outline focus:outline-3 focus:outline-red-500 ">
                       <Label aria-label="email label" htmlFor="signup-email" className="text-black font-bold text-lg">Email</Label>
                       <Input aria-label="email input" id="signup-email" placeholder="Enter your email" onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}/>
                     </div>
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col space-y-3 focus:outline focus:outline-3 focus:outline-red-500 ">
                       <Label aria-label="password label" htmlFor="signup-password" className="text-black font-bold text-lg">Password</Label>
-                      <Input id="signup-password" type="password" placeholder="Choose a password" onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}/>
+                      <Input className="focus:outline focus:outline-3 focus:outline-red-500" id="signup-password" type="password" placeholder="Choose a password" onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}/>
                     </div>
                   </div>
                 </form>
@@ -127,10 +127,10 @@ const navigateToHome = () => {
             </Tabs>
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
-            <Button aria-label="submit form button" className="w-full bg-blue-400 font-bold text-black text-lg border-gray-400 border-2" onClick={() => activeTab === "login" ? login() : signUp()}>
+            <Button aria-label="submit form button" className="w-full focus:outline hover:outline focus:outline-3 hover:outline-3 focus:outline-red-500 hover:bg-red-500 bg-blue-400 font-bold text-black text-lg border-gray-400 border-2" onClick={() => activeTab === "login" ? login() : signUp()}>
               {activeTab === "login" ? "Log In" : "Sign Up"}
             </Button>
-            <Button aria-label="play as guest button" variant="outline" className="w-full border-2 border-gray-400 bg-gray-200 text-black font-bold text-lg" onClick={() => guestSignIn()}>
+            <Button aria-label="play as guest button" variant="outline" className="w-full border-2 focus:outline hover:outline focus:outline-3 hover:outline-3 focus:outline-red-500 hover:bg-red-500 border-gray-400 bg-gray-200 text-black font-bold text-lg" onClick={() => guestSignIn()}>
               Play as Guest
             </Button>
           </CardFooter>

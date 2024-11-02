@@ -29,6 +29,7 @@ const HostGame = () => {
   useEffect(() => {
     // Connect to WebSocket server
     const newSocket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
+    // const newSocket = io("http://localhost:5001", { withCredentials: true});
     
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
@@ -77,7 +78,7 @@ const HostGame = () => {
         <h1 aria-label={`${title} title label`} className="text-4xl font-bold text-white mb-8 mt-4">{title}</h1>
         <button 
           aria-label="Back button"
-          className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-blue-600"
+          className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-red-500"
           onClick={() => window.history.back()}
         >
             Back
@@ -132,9 +133,9 @@ const HostGame = () => {
                   type="text" 
                   value={lobbyCode} 
                   readOnly 
-                  className="text-center text-2xl font-bold"
+                  className="text-center text-2xl font-bold focus:outline focus:outline-2 focus:outline-red-500"
                   />
-                  <Button aria-label="copy lobby code button" className="hover:bg-blue-900 focus:bg-blue-900 hover:outline hover:outline-2 hover:outline-white focus:outline focus:outline-2 focus:outline-white" size="icon" onClick={copyLobbyCode}>
+                  <Button aria-label="copy lobby code button" className="hover:bg-red-500 focus:bg-red-500 hover:outline hover:outline-2 hover:outline-white focus:outline focus:outline-2 focus:outline-white" size="icon" onClick={copyLobbyCode}>
                   <Copy className="h-4 w-4" />
                   <span className="sr-only">Copy lobby code</span>
                   </Button>

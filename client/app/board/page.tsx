@@ -8,6 +8,9 @@ import { io } from 'socket.io-client';
 interface SquareProps {
   value: string | null;
   onClick: () => void;
+  onFocus: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
 const indexToLocationMap: { [index: number]: string } = {
@@ -22,11 +25,21 @@ const indexToLocationMap: { [index: number]: string } = {
   8: "bottom right"
 };
 
-const Square: React.FC<SquareProps> = ({ value, onClick }) => (
-  <button aria-label={`${value === 'X' ? 'X filled box' : 'Y filled box'}`} className={`square ${value}`} onClick={onClick}>
+const Square: React.FC<SquareProps> = ({ value, onClick, onFocus, onMouseEnter, onMouseLeave }) => (
+  <button aria-label={`${value === 'X' ? 'X filled box' : 'Y filled box'}`} 
+  className={`square ${value}`} 
+  onClick={onClick}
+  onFocus={onFocus}
+  onMouseEnter={onMouseEnter}
+  onMouseLeave={onMouseLeave}>
     {value}
   </button>
 );
+
+const speak = (text: string) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+};
 
 interface GameState {
   playerX: string;
@@ -57,6 +70,28 @@ const Board: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomID, setRoomID] = useState<string>("");
+  const [focusedSquare, setFocusedSquare] = useState<number | null>(null);
+
+  useEffect(() => {
+    try {
+      const currentPlayer = isXNext ? gameState.playerX : gameState.playerO;
+      if (currentPlayer) {
+        speak(`It's ${currentPlayer}'s turn`);
+      }
+    } catch(err) {
+      console.error(err);
+    }
+
+    
+  }, [isXNext, gameState.playerX, gameState.playerO]);
+
+  useEffect(() => {
+    if (focusedSquare !== null) {
+      const locationText = indexToLocationMap[focusedSquare];
+      speak(`Focused on ${locationText}`);
+    }
+  }, [focusedSquare]);
+
 
   useEffect(() => {
     if (typeof window !== "undefined") { // Check if it's running on the client
@@ -73,6 +108,7 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     const socket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
+    // const socket = io("http://localhost:5001", { withCredentials: true});
     setSocket(socket);
     if (typeof window !== "undefined") {
       socket.emit("boardSocketJoin", sessionStorage.getItem("roomID"));
@@ -185,6 +221,9 @@ const Board: React.FC = () => {
       aria-label={`Box at ${indexToLocationMap[index]}`}
       value={board[index]}
       onClick={() => handleClick(index)}
+      onFocus={() => setFocusedSquare(index)}
+      onMouseEnter={() => setFocusedSquare(index)}
+      onMouseLeave={() => setFocusedSquare(null)}
     />
   );
 
@@ -212,6 +251,16 @@ const Board: React.FC = () => {
       </div>
     </div>
   </div>
+  {focusedSquare !== null && (
+      <Card aria-label="focus square card" className="ml-12 mb-3" style={{ width: '450px', height:'100px' }}>
+        <CardHeader>
+          <CardTitle>Focused Square</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{`Focused on ${indexToLocationMap[focusedSquare]}`}</p>
+        </CardContent>
+      </Card>
+        )}
   <Card aria-label="Game info card" className="game-info-card ml-12" style={{ width: '450px' }}>
     <CardHeader>
       <CardTitle>Game Info</CardTitle>
