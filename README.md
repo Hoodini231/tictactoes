@@ -1,12 +1,14 @@
-# Accessible Tic-Tac-Toe Multiplayer Game
+![image](https://github.com/user-attachments/assets/fecae928-3160-4be3-a8ca-70337f45db4f)# Accessible Tic-Tac-Toe Multiplayer Game
 
 [Play here](https://tictactoes-wqsc.vercel.app)
 
 Link: https://tictactoes-wqsc.vercel.app
 
-A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, track their stats, and review each turn of completed matches, all while benefiting from intuitive user authentication. Overall, attempted to balance pleasant UI design with accessibility, thus, I opted for a coloured background with white cards to remain stylish yet high contrast.
+A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, and track their stats.
 
-![image](https://github.com/user-attachments/assets/b0796ce1-6d3d-4108-abac-1969ccc37a2f)
+<img width="1109" alt="image" src="https://github.com/user-attachments/assets/f804d33e-933c-4081-b3dd-2f336fd6e18c">
+
+
 
 
 ---
@@ -19,6 +21,7 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 - [Installation](#installation)
 - [User Guide](#user-guide)
 - [Graphic Examples](#graphic-examples)
+- [Contrast Ratios](#contrast-ratio)
 
 ---
 
@@ -30,11 +33,17 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 - **Deployment**: Leveraged Vercel to host front-end serverless deployment and Render for backend web service deployment.
 - **[NOTE]**: If api calls to render are pending for a long time this is due to the deployment being spundown due to inactivity give it some time and try again after some time after the first call to 'wake it up'
 ---
-## Assumptions
+## Assumptions 
 - Users won't spam squares and produce a long audio queue for indicating which square is in focus.
 - Users who rely on keyboard naviability are familiar with it.
 - Trivial implmentation of user authentication and sign up where password strength and valid emails are not checked.
 - User will not be active on the same account on two instances or more at the same time.
+---
+## Interpretations 
+- Goal: Make a nicely designed and accessible full-stack web application with user auth and profiles
+- Achieved: Stores game state and turn moves, user profiles and stats, real-time multiplayer connection, anonymous user creation via guest. Announce the winner when appropriate.
+- My interpretation for this front-end role was to build a unique and nicely designed website while being accessible and balancing these two. Of course, if we wanted maximum readability via high contrast we could have used a black-and-white theme but it would also be bland and people who prefer color identification would struggle. Thus, I took up the challenge of making a nice design while maintaining high-contrast colors for those who struggle with reading and would prefer navigating through color versus those who struggle with color and rather navigate with text.
+
 ---
 
 ## Features
@@ -55,9 +64,9 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 ### 4. **Guest Player Availability**
    - Users can play through automatically generated guest accounts.
      
-### 5. **Text to speech gameplay for visually impaired**
-   - Users are able to recieve audio queues for who's turn it is and what square is currently in focus.
-   - (In future) Users will be able to opt in / out of this and it should also indicate if the square is empty or not.
+### 5. **Text-to-speech gameplay for the visually impaired**
+   - Users are able to receive audio queues for whose turn it is and what square is currently in focus.
+   - (In the future) Users will be able to opt in / out of this and it should also indicate if the square is empty or not.
 
 ### 5. **User Dashboard**
    - **Game Statistics**: View stats like total games played, wins, losses, and ties.
@@ -70,14 +79,19 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
    - **Large and clear text for visually impaired** Used larger text and more spacing to increase readability.
    - **Labels for clarity** Added sub-labels for color blind or those who struggle reading.
    - **Aria label support for screen readers for the visually impaired** Added aria-label support for those using screen readers.
-   - **Full keyboard navigability for motor impaired** Added full page functionality and navigability via [TAB] and [ENTER]. Highlighted them distinct colors for the visually impaired.
+   - **Full keyboard navigability for motor impaired** Added full page functionality and navigability via [TAB] and [ENTER]. Highlighted them as distinct colors for the visually impaired.
+   - **Audio Queues** Added audio queues to indicate 
 ---
 ## Accessibility
-Accessibility was central to the design of this solution to ensure inclusivity for users with visual impairments or colorblindness. High-contrast colors were chosen carefully, meeting WCAG 2.1 Level AA guidelines to improve readability, especially for users with low vision or color sensitivity. This allows all text and interactive elements to be easily distinguishable.
+Accessibility was a core priority in the design, with considerations for motor, visual, and auditory impairments. I ensured high-contrast colors for labels and buttons, adhering to WCAG 2.1 AA guidelines for optimal readability. 
 
-ARIA labels were applied to all key components, providing screen reader users with descriptive cues to navigate the interface effectively. Keyboard navigability was prioritized across the application, enabling users to interact with every feature without needing a mouse. Focus indicators were made distinct, allowing users to follow their position on the page with ease.
+For the Tic Tac Toe board, I balanced the colors: white, green, red, and blue to represent the four possible cell states.
 
-To accommodate colorblind users, redundant cues like icons and text labels were added alongside color indicators, ensuring important information isn’t solely conveyed by color. These combined accessibility features create a more inclusive and user-friendly experience for everyone.
+I implemented ARIA labels across all components, enabling screen reader users to navigate seamlessly with descriptive cues. 
+
+Keyboard navigation was fully supported, allowing users to access every feature with just the [TAB] and [ENTER] keys (tested on Chrome).
+
+Clear focus indicators, including a bold outline, helped users track their on-screen position easily. Additionally, audio cues were added to announce the user’s current square and turn status, aiding those with visual impairments.
 
 ---
 ## User Guide
@@ -136,11 +150,17 @@ Not recommended as it is already publically hosted.
 
 
 ## Graphic Examples
+--Home page with animations and white outline to indicate focused/selected button.
+<img width="1109" alt="image" src="https://github.com/user-attachments/assets/48feaa8c-c397-4987-9400-7dd8a2469cf5">
+
+
 --Game page with Red as X, Green as O and blue showing active focus square.
-![image](https://github.com/user-attachments/assets/9ae6cf2a-69d8-43e5-84a0-75db5659d056)
+<img width="1114" alt="image" src="https://github.com/user-attachments/assets/a5429725-69af-419d-8ec8-055ea2a77a42">
+
 
 --Game page scrolled down to show game info card and instructions on play.
-![image](https://github.com/user-attachments/assets/36f0b906-44dc-4d4c-8086-dfddaf55e94e)
+<img width="1109" alt="image" src="https://github.com/user-attachments/assets/f8ddb5e2-bbb5-4da0-ba69-8761234d1e1a">
+
 
 --Dashboard on player stats.
 ![image](https://github.com/user-attachments/assets/e1d3fa02-e928-4e1c-bffb-6a5a9bcc6a91)
@@ -151,5 +171,16 @@ Not recommended as it is already publically hosted.
 --Hosting a lobby.
 ![image](https://github.com/user-attachments/assets/08230a22-afbf-455d-82a7-34d232552efb)
 
+--Sign in / Sign up.
+<img width="1061" alt="image" src="https://github.com/user-attachments/assets/9cf09fb1-25f6-47e4-b14f-99be46aaf18b">
+
+
+## Contrast Ratios
+
+<img width="713" alt="Screenshot 2024-11-02 at 22 16 15" src="https://github.com/user-attachments/assets/0a034d16-4168-4528-8fc9-54cd0c402186">
+<img width="698" alt="Screenshot 2024-11-02 at 22 21 25" src="https://github.com/user-attachments/assets/1051606f-c36e-4ac5-acfa-fb8ed9db9feb">
+<img width="686" alt="Screenshot 2024-11-02 at 22 09 47" src="https://github.com/user-attachments/assets/eec2cb79-25ff-49c4-a87d-6d5097efa462">
+
+<img width="687" alt="Screenshot 2024-11-02 at 22 11 06" src="https://github.com/user-attachments/assets/d6a279b1-5378-4acb-97c8-24ebadb2a1e6">
 
 
