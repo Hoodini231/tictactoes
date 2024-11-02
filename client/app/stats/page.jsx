@@ -172,7 +172,7 @@ const Dashboard = () => {
                       aria-label={`${(game.winner === 'X' && username === game.playerX) || (game.winner === 'O' && username === game.playerO)? 'Win' : 'Loss'} label`}
                       className={`mr-2 text-lg ${(game.winner === 'X' && username === game.playerX) || (game.winner === 'O' && username === game.playerO)? 'text-green-500' : 'text-red-500'}`}
                     >
-                      {`${(game.winner === 'X' && username === game.playerX) || (game.winner === 'O' && username === game.playerO)? 'Win' : 'Loss'}`}
+                      {`${(game.winner === 'X' && username === game.playerX) || (game.winner === 'O' && username === game.playerO)? 'Win' : (game.winner !=='tied') ? 'Loss' : 'Tie'}`}
                     </span>
                     <Button className="hover:outline focus:outline hover:bg-red-500 focus:bg-red-500 hover:outline-white focus:outline-white" variant="ghost" size="sm">
                       <ChevronRight className="h-7 w-7" />

@@ -184,21 +184,22 @@ const Board: React.FC = () => {
     // Update the board with the new move
     const newBoard = board.slice();
     newBoard[index] = username === gameState.playerX ? 'X' : 'O';
+
+    const winnerInfo = calculateWinner(newBoard);
+    
+    const copyBoard = newBoard.slice();
+    const isTie = copyBoard.every(square => square !== null) && !winnerInfo;
     setBoard(newBoard);
 
-    // Check if this move results in a winner
-    const winnerInfo = calculateWinner(newBoard);
-
     // Create updated game state with winner and game status
-    console.log(winnerInfo?.winner);
     const newGameState: GameState = {
       playerX: gameState.playerX,
       playerO: gameState.playerO,
       board: newBoard,
       roomID: gameState.roomID,
       lastTurn: isXNext ? 'X' : 'O',
-      winner: winnerInfo ? winnerInfo?.winner : "none",
-      status: winnerInfo?.winner ? "complete" : "incomplete",
+      winner: winnerInfo ? winnerInfo?.winner : isTie ? "tied" : "none",
+      status: winnerInfo?.winner  || isTie? "complete" : "incomplete",
       turnNumber: gameState.turnNumber + 1
     };
 
@@ -210,12 +211,11 @@ const Board: React.FC = () => {
     if (socket) {
       if (winnerInfo) {
         socket.emit("playerWon", { roomID: newGameState.roomID, gameState: newGameState });
-      } else if(isTie || isBoardFull) {
-        socket.emit("gameTied", { roomID: newGameState.roomID, gameState: newGameState });
+      } else if(isTie) {
+        socket.emit("playerTied", { gameState: newGameState });
       }
-      else {
-        socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
-      }
+      socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
+      
     }
   };
 

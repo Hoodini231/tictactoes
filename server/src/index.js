@@ -38,7 +38,6 @@ mongoose.connect(databaseString)
         console.error("Failed to connect to MongoDB", error);
     });
 
-//const serverClient = new postmark.ServerClient("POSTMARK_SERVER_API_TOKEN");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -121,7 +120,7 @@ io.on("connection", (socket) => {
 
     socket.on("playerWon", ({ roomID, gameState }) => {
         try {
-            io.to(roomID.toString()).emit("playerWon", { gameState });
+            io.to(roomID.toString()).emit("updateOpponentBoard", { gameState });
             uploadGameState(gameState);
             updateUserData(gameState);
         } catch (error) {
@@ -129,21 +128,8 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("playerTied", ({ roomID, gameState }) => {
+    socket.on("playerTied", ({ gameState }) => {
         try {
-            //io.to(roomID.toString()).emit("playerWon", { gameState });
-            const finalGameState = new Game({
-                winner: 'tied',
-                gameID: gameState.roomID,
-                playerX: gameState.playerX,
-                playerO: gameState.playerO,
-                lastUpdate: new Date(),
-                board: gameState.board,
-                lastTurn: gameState.lastTurn,
-                status: "complete",
-                turnNumber: gameState.turnNumber
-            });
-            uploadGameState(finalGameState);
             updateUserData(gameState);
         } catch (error) {
             console.log("Error in playerWon:", error);
@@ -162,9 +148,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("joinRoom", ({roomID, username}) => {
-        console.log("attempted join");
-        console.log("join roomdID: " + roomID);
-        console.log("join rooms.get: ", io.sockets.adapter.rooms.get(roomID));
         io.to(roomID).emit("roomJoined", { message: "sup" });
         const room = io.sockets.adapter.rooms.get(roomID);
         if (room && room.size === 1) {
@@ -258,9 +241,7 @@ async function uploadGameState(gameState) {
 
 app.post("/signup", async (req, res) => {
     try {
-        console.log("arrived at signup");
         const { username, email, password } = req.body;
-        console.log(req.body);
         const userId = uuidv4(); // Great random user id gererator
         const hashPswd = await bcrypt.hash(password, 10);
         //const token = serverClient.createToken(userId);
