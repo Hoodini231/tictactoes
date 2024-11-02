@@ -1,8 +1,9 @@
 # Accessible Tic-Tac-Toe Multiplayer Game
 
-Play here ![URL](tictactoes-wqsc.vercel.app)
+[Play here](https://tictactoes-wqsc.vercel.app)
 
 A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on inclusivity and user-friendly features. Players can host and join custom games, track their stats, and review each turn of completed matches, all while benefiting from intuitive user authentication.
+
 ![image](https://github.com/user-attachments/assets/b0796ce1-6d3d-4108-abac-1969ccc37a2f)
 
 
@@ -25,7 +26,7 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 - **Backend**: Node.js with [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) - enables real-time, bidirectional communication.
 - **Database**: [MongoDB](https://www.mongodb.com/) - to manage game data, user accounts, and game history.
 - **Deployment**: Leveraged Vercel to host front-end serverless deployment and Render for backend web service deployment.
-
+- **[NOTE]**: If api calls to render are pending for a long time this is due to the deployment being spundown due to inactivity give it some time and try again after some time after the first call to 'wake it up'
 ---
 ## Assumptions
 - Users won't spam squares and produce a long audio queue for indicating which square is in focus.
@@ -133,10 +134,19 @@ Not recommended as it is already publically hosted.
 
 
 ## Graphic Examples
-![image](https://github.com/user-attachments/assets/1c9cd029-8abe-477a-9a1b-09c1256ae09b)
+--Game page with Red as X, Green as O and blue showing active focus square.
+![image](https://github.com/user-attachments/assets/9ae6cf2a-69d8-43e5-84a0-75db5659d056)
 
-![image](https://github.com/user-attachments/assets/d7a8d8d2-ae98-4fe0-bd55-f6212a8b351d)
+--Game page scrolled down to show game info card and instructions on play.
+![image](https://github.com/user-attachments/assets/36f0b906-44dc-4d4c-8086-dfddaf55e94e)
 
+--Dashboard on player stats.
+![image](https://github.com/user-attachments/assets/e1d3fa02-e928-4e1c-bffb-6a5a9bcc6a91)
+
+--Join a lobby.
+![image](https://github.com/user-attachments/assets/a840da1a-8a5e-4eb0-a26a-42dbbff1254c)
+
+--Hosting a lobby.
 ![image](https://github.com/user-attachments/assets/08230a22-afbf-455d-82a7-34d232552efb)
 
 
