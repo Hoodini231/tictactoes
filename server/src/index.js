@@ -21,8 +21,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // Frontend origin
-        // origin: "https://tictactoes-wqsc.vercel.app", // Frontend origin
+        // origin: "http://localhost:3000", // Frontend origin
+        origin: "https://tictactoes-wqsc.vercel.app", // Frontend origin
         methods: ["GET", "POST"],
         credentials: true
     }
