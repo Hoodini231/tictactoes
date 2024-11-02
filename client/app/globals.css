@@ -183,11 +183,12 @@ body {
 .square:focus {
   background-color: #1b499f; /* Blue background on focus */
   color: #fff; /* White text on focus */
+  border: 3px solid #fff;
 }
 
 
 .square:hover {
-  background-color: #1b499f; /* Light grey hover effect */
+  background-color: #fff; /* Light grey hover effect */
 }
 
 .X {
