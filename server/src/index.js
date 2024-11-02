@@ -21,7 +21,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "https://tictactoes-wqsc.vercel.app", // Frontend origin
+        origin: "http://localhost:3000", // Frontend origin
+        // origin: "https://tictactoes-wqsc.vercel.app", // Frontend origin
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -121,8 +122,10 @@ io.on("connection", (socket) => {
 
     socket.on("playerWon", ({ roomID, gameState }) => {
         try {
+            console.log("plaeyr won");
             io.to(roomID.toString()).emit("playerWon", { gameState });
             uploadGameState(gameState);
+            updateUserData(gameState);
         } catch (error) {
             console.log("Error in playerWon:", error);
         }
@@ -324,11 +327,12 @@ app.post("/play-as-guest", async (req, res) => {
     }
 });
 
+// works
 app.get("/findUser", async (req, res) => {
     try {
         const username = req.query.username;
         const user = await User.find({ username });
-        res.json(user);
+        res.json(user[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -337,19 +341,62 @@ app.get("/findUser", async (req, res) => {
 app.get("/fetchUserGames", async (req, res) => {
     try {
         const username = req.query.username;
+        
+        // Fetch games where the user was either playerX or playerO
         const games = await Game.find({ $or: [{ playerX: username }, { playerO: username }] });
-        res.json(games);
+        const completedGames = games.filter(game => game.status === 'complete');
+        // Group games by gameID, keeping only the one with the highest turnNumber for each gameID
+        const uniqueGames = completedGames.reduce((acc, game) => {
+            if (
+                !acc[game.gameID] || 
+                (acc[game.gameID] && game.turnNumber > acc[game.gameID].turnNumber)
+            ) {
+                acc[game.gameID] = game;
+            }
+            return acc;
+        }, {});
+
+        // Extract the games from the grouped object and return as an array
+        const result = Object.values(uniqueGames);
+        
+        res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
+
 app.get("/fetchGameData", async (req, res) => {
     try {
         const gameID = req.query.gameID; 
-        const gameData = await Game.find({ gameID }).sort({ turnNumber: 1 }); 
+        console.log(gameID);
+        const gameData = await Game.find({ gameID }).sort({ turnNumber: -1 }); 
         res.json(gameData);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+async function updateUserData(gameState) {
+    try {
+        const playerX = await User.findOne({ username: gameState.playerX });
+        const playerO = await User.findOne({ username: gameState.playerO });
+        if (gameState.winner === 'X') {
+            playerX.stats.wins += 1;
+            playerO.stats.losses += 1;
+        } else if (gameState.winner === 'O') {
+            playerO.stats.wins += 1;
+            playerX.stats.losses += 1;
+        } else {
+            playerX.stats.ties += 1;
+            playerO.stats.ties += 1;
+        }
+        playerX.stats.gamesPlayed += 1;
+        playerO.stats.gamesPlayed += 1;
+        await playerX.save();
+        await playerO.save();
+    } catch (error) {
+        console.log("Error in updateUserData:", error);
+    }
+}
+

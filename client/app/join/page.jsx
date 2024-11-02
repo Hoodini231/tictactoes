@@ -14,9 +14,6 @@ const HostGame = () => {
     const [opponent, setOpponent] = useState("Waiting...");
     const [joinedGame, setJoinedGame] = useState("false");
     const [mySymbol, setMySymbol] = useState("?");
-    // const [myTurn, setMyTurn] = useState("false");
-    // const [gameState, setGameState] = useState({playerX: null, playerY: null, roomId: null, lastMove: null, board: Array(9).fill(null)});
-
 
   const copyLobbyCode = () => {
     navigator.clipboard.writeText(lobbyCode)
@@ -34,7 +31,6 @@ const HostGame = () => {
     const newSocket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
     setSocket(newSocket);
     
-
     if (typeof window !== "undefined") { // Check if it's running on the client
         const storedUsername = sessionStorage.getItem("username");
         if (storedUsername) {
@@ -46,24 +42,16 @@ const HostGame = () => {
         console.log('Connected to server');
     });
 
-    // Join a room on server
-    //newSocket.emit("joinQueue", { roomID: roomID, username: username });
-
     newSocket.on("roomIdGenerated", (data) => {
         setLobbyCode(data);
     });
 
     newSocket.on('startGame', (data) => {
         sessionStorage.setItem('roomID', data.gameState.roomID);
-        console.log('Starting game:', data);
         setJoinedGame("true");
-        //setGameState(data.gameState);
         setMySymbol(data.symbol);
-        // setMyTurn(data.myTurn);
         setOpponent(data.opponent);
-        //setGameState(data); // Update game state with received data
     });
-
 
     newSocket.on('gameOver', (data) => {
         console.log('Game over:', data);
@@ -74,7 +62,6 @@ const HostGame = () => {
         console.log('Room joined:', data);
     });
 
-
     // Clean up on component unmount
     return () => {
         newSocket.disconnect();
@@ -82,19 +69,10 @@ const HostGame = () => {
     }, []);
 
     const joinLobby = () => {
-        console.log(socket);
-        console.log(lobbyCode);
         if (socket && lobbyCode) {
-
-            console.log("join");
             socket.emit("joinRoom", { roomID: lobbyCode, username: username });
         }
     };
-
-    // Call the joinLobby function when the Join button is clicked
-    <Button size="icon" onClick={joinLobby}>
-        Join
-    </Button>
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-800 to-purple-600 flex flex-col items-center justify-start p-4">
@@ -102,26 +80,27 @@ const HostGame = () => {
 
         {joinedGame !== 'false' ? (
             <div>
-                <h1 className="text-4xl font-bold text-white mb-8 mt-4">Tic tack Toes</h1>
+                <h1 aria-label="Tic Tac Toes title" className="text-4xl font-bold text-white mb-8 mt-4">Tic Tac Toes</h1>
                 <button 
+                aria-label="Back button"
                 className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-blue-600"
                 onClick={() => window.history.back()}
                 >
                     Back
                 </button>
                 <div className="w-full max-w-4xl flex flex-col sm:flex-row justify-between gap-4 mb-8">
-                    <Card className="w-full sm:w-[calc(50%-0.5rem)]">
+                    <Card aria-label="Your information card" className="w-full sm:w-[calc(50%-0.5rem)]">
                     <CardHeader>
                         <CardTitle>You</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-2xl font-bold">{username}</p>
+                        <p aria-label="Your username label" className="text-2xl font-bold">{username}</p>
                         {opponent === "Waiting..." ? (
                             <></>
                         ) :(
                             <>
-                            <p className={`text-lg`}>[Playing as {mySymbol}]</p>
-                            <p className={`text-lg text${mySymbol}`}>[Is color {mySymbol === "X" ? "Red" : "Green"}]</p>
+                            <p aria-label={`Playing as ${mySymbol} label`} className={`text-lg`}>[Playing as {mySymbol}]</p>
+                            <p aria-label={`Playing as colour ${mySymbol === "X" ? "Red" : "Green"} label`}className={`text-lg text${mySymbol}`}>[Is color {mySymbol === "X" ? "Red" : "Green"}]</p>
                             </>
                             )
                         }
@@ -150,22 +129,23 @@ const HostGame = () => {
                 {opponent === "Waiting..." ? (
                     <Card className="w-full max-w-md">
                         <CardHeader>
-                        <CardTitle className="text-center">Lobby Code</CardTitle>
+                        <CardTitle aria-label="Lobby code title" className="text-center">Lobby Code</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center">
                         <div className="flex w-full max-w-sm items-center space-x-2">
                             <Input 
+                            aria-label={`Lobby code ${lobbyCode} label`}
                             type="text" 
                             value={lobbyCode} 
                             readOnly 
                             className="text-center text-2xl font-bold"
                             />
-                            <Button size="icon" onClick={copyLobbyCode}>
+                            <Button aria-label="Copy lobby code button" size="icon" onClick={copyLobbyCode}>
                             <Copy className="h-4 w-4" />
                             <span className="sr-only">Copy lobby code</span>
                             </Button>
                         </div>
-                        <p className="mt-4 text-sm text-muted-foreground">Share this code with your opponent to join the game</p>
+                        <p aria-label="Share this code label" className="mt-4 text-sm text-muted-foreground">Share this code with your opponent to join the game</p>
                         </CardContent>
                     </Card>
                     ) : (
@@ -176,8 +156,9 @@ const HostGame = () => {
         ) : (
             
             <div className="flex flex-col items-center">
-                <h1 className="text-4xl font-bold text-white mb-8 mt-4">Tic tack Toes</h1>
+                <h1 aria-label="Tic Tac Toes Title" className="text-4xl font-bold text-white mb-8 mt-4">Tic Tac Toes</h1>
                 <button 
+                aria-label="Back button"
                 className="back-button absolute top-4 left-40 px-4 py-2 bg-white text-black font-bold rounded hover:bg-blue-600"
                 onClick={() => window.history.back()}
             >
@@ -185,11 +166,12 @@ const HostGame = () => {
             </button>
                 <Card>
                     <CardHeader>
-                    <CardTitle className="text-center">Join Lobby</CardTitle>
+                    <CardTitle aria-label="Join lobby title" className="text-center">Join Lobby</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center">
                     <div className="flex w-full max-w-sm items-center space-x-2">
                         <Input
+                        aria-label="Enter lobby code input"
                         type="text"
                         placeholder="Enter Lobby Code"
                         value={lobbyCode}

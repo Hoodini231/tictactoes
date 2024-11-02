@@ -32,6 +32,10 @@ const gameSchema = new mongoose.Schema({
     turnNumber: {
         type: Number,
         required: true
+    },
+    lastUpdate: {
+        type: Date,
+        default: Date.now
     }
 });
 

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
@@ -8,8 +9,20 @@ interface SquareProps {
   onClick: () => void;
 }
 
+const indexToLocationMap: { [index: number]: string } = {
+  0: "top left",
+  1: "middle left",
+  2: "bottom left",
+  3: "top center",
+  4: "middle center",
+  5: "bottom center",
+  6: "top right",
+  7: "middle right",
+  8: "bottom right"
+};
+
 const Square: React.FC<SquareProps> = ({ value, onClick }) => (
-  <button className={`square ${value}`} onClick={onClick}>
+  <button aria-label={`${value === 'X' ? 'X filled box' : 'Y filled box'}`} className={`square ${value}`} onClick={onClick}>
     {value}
   </button>
 );
@@ -48,47 +61,36 @@ const Board: React.FC = () => {
     if (typeof window !== "undefined") { // Check if it's running on the client
       const storedUsername = sessionStorage.getItem("username");
       const storedRoomID = sessionStorage.getItem("roomID");
-      console.log('Stored username:', storedUsername);
-      console.log('Stored roomID:', storedRoomID);
       if (storedUsername) {
         setUsername(storedUsername);
       }
       if (storedRoomID) {
-        console.log('Setting roomID:', storedRoomID);
         setRoomID(storedRoomID);
       }
     }
   }, []);
 
   useEffect(() => {
-    const socket = io("http://localhost:5001", { withCredentials: true});
+    const socket = io("https://tictactoes-5foa.onrender.com", { withCredentials: true});
     setSocket(socket);
     if (typeof window !== "undefined") {
       socket.emit("boardSocketJoin", sessionStorage.getItem("roomID"));
     }
 
     if (socket) {
-      socket.on('disconnect', () => {
-        console.log('Disconnected from server:');
-        // Attempt to reconnect
-      });
-
       socket.on("boardSocketJoinedSuccessful", (data: { gameState: GameState }) => {
-        console.log('Joined board socket:', data.gameState);
         setGameState(data?.gameState);
         setBoard(data?.gameState?.board || Array(9).fill(null));
         setIsXNext(true);
       });
 
       socket.on('startGame', (data: { gameState: GameState }) => {
-        console.log('Starting game in board:', data);
         setGameState(data?.gameState);
         setBoard(data?.gameState?.board || Array(9).fill(null));
         setIsXNext(true);
       });
 
       socket.on('playerMoved', (data: { gameState: GameState }) => {
-        console.log('Move received:', data.gameState);
         setGameState(data.gameState);
         setBoard(data.gameState.board);
         setPlayerTurn(data.gameState.lastTurn === 'X' ? 'O' : 'X');
@@ -107,7 +109,6 @@ const Board: React.FC = () => {
   }, [roomID]); // Add socket as a dependency
 
   const calculateWinner = (squares: (string | null)[]) => {
-    console.log('Checking for winner:', squares);
     const winningLines = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
       [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
@@ -141,7 +142,7 @@ const Board: React.FC = () => {
       winner || 
       (playerTurn === 'X' && username !== gameState.playerX) || 
       (playerTurn === 'O' && username !== gameState.playerO)
-    ) return; // Ignore click if square is filled or game has a winner
+    ) return; 
 
     // Update the board with the new move
     const newBoard = board.slice();
@@ -170,41 +171,59 @@ const Board: React.FC = () => {
 
     // Emit the updated game state to the server
     if (socket) {
-
-      socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
+      if (winnerInfo) {
+        socket.emit("playerWon", { roomID: newGameState.roomID, gameState: newGameState });
+      } else {
+        socket.emit("playerMoved", { roomID: newGameState.roomID, gameState: newGameState });
+      }
     }
   };
 
   const renderSquare = (index: number) => (
     <Square
+      aria-label={`Box at ${indexToLocationMap[index]}`}
       value={board[index]}
       onClick={() => handleClick(index)}
     />
   );
 
   return [
-    <div className="tictactoe" key="board-container">
-      <div className="status">
-        {winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'}`}
+    <div className="game-container flex">
+  <div className="tictactoe items-center" key="board-container">
+    <div aria-label={winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Next Player: ${isXNext ? 'X' : 'O'} label`} className="status">
+      <p className="text-2xl font-bold text-center mb-4">{winner ? `Winner: ${winner}` : isTie ? "Tied game!" : `Player Turn: ${isXNext ? gameState.playerX + ' (X)' : gameState.playerO + '(O)'}  `}</p>
+    </div>
+    <div aria-label="tic tac toe board" className="board">
+      <div aria-label="column 1" className="row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </div>
-      <div className="board">
-        <div className="row">
-          {renderSquare(0)}
-          {renderSquare(1)}
-          {renderSquare(2)}
-        </div>
-        <div className="row">
-          {renderSquare(3)}
-          {renderSquare(4)}
-          {renderSquare(5)}
-        </div>
-        <div className="row">
-          {renderSquare(6)}
-          {renderSquare(7)}
-          {renderSquare(8)}
-        </div>
+      <div aria-label="column 2" className="row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div aria-label="column 3" className="row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
       </div>
     </div>
+  </div>
+  <Card aria-label="Game info card" className="game-info-card ml-12" style={{ width: '450px' }}>
+    <CardHeader>
+      <CardTitle>Game Info</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p aria-label="Room ID label"><strong>Room ID:</strong> {gameState.roomID}</p>
+      <p aria-label="Turn number label"><strong>Turn Number:</strong> {gameState.turnNumber}</p>
+      <p aria-label="How to win label"><strong>How to win:</strong> Get 3 of your symbols (X or O) in a row!</p>
+      <p aria-label="How to play"><strong>How to play:</strong> Player X starts first, then player O and X alternate turns. Either use [TAB] or mouse to select an empty cell, which will highlight blue, then click or press [ENTER] to place your symbol there.</p>
+    </CardContent>
+  </Card>
+</div>
+
   ];
 };
 
