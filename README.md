@@ -22,6 +22,7 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 - [User Guide](#user-guide)
 - [Graphic Examples](#graphic-examples)
 - [Contrast Ratios](#contrast-ratio)
+- [Known Issues](#known-issues)
 
 ---
 
@@ -183,4 +184,6 @@ Not recommended as it is already publically hosted.
 
 <img width="687" alt="Screenshot 2024-11-02 at 22 11 06" src="https://github.com/user-attachments/assets/d6a279b1-5378-4acb-97c8-24ebadb2a1e6">
 
+## Known Issues
+- Accessing on mobile devices may cause some form of client-side application error on attempting to activate a cell.
 
