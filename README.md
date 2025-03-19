@@ -43,7 +43,7 @@ A fully accessible, real-time multiplayer Tic-Tac-Toe game built with a focus on
 ## Interpretations 
 - Goal: Make a nicely designed and accessible full-stack web application with user auth and profiles
 - Achieved: Stores game state and turn moves, user profiles and stats, real-time multiplayer connection, anonymous user creation via guest. Announce the winner when appropriate.
-- My interpretation for this front-end role was to build a unique and nicely designed website while being accessible and balancing these two. Of course, if we wanted maximum readability via high contrast we could have used a black-and-white theme but it would also be bland and people who prefer color identification would struggle. Thus, I took up the challenge of making a nice design while maintaining high-contrast colors for those who struggle with reading and would prefer navigating through color versus those who struggle with color and rather navigate with text.
+- My interpretation for this project was to build a unique and nicely designed website while being accessible and balancing these two. Of course, if we wanted maximum readability via high contrast we could have used a black-and-white theme but it would also be bland and people who prefer color identification would struggle. Thus, I took up the challenge of making a nice design while maintaining high-contrast colors for those who struggle with reading and would prefer navigating through color versus those who struggle with color and rather navigate with text.
 
 ---
 
